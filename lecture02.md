@@ -95,15 +95,18 @@ SVN【中央集権型】
 - リポジトリ：バージョン管理によって管理されるファイルと履歴情報を保管する領域
 
 ### ★ Q/A ★
-◇GitHub　ReadMeとは
+◇GitHub ReadMe とは
+
 リポジトリに訪れた人に "このプロジェクトが何なのか" をわかりやすく伝えるための説明書のようなもの。
 
 ＜参考＞https://cpp-learning.com/readme/
 
 ◇ユーザー設定確認方法
+
 https://docs.github.com/ja/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/remembering-your-github-username-or-email
 
 ◇Git Cloneの意味
+
 リポジトリのクローンを作成して、コンピュータ上にローカルコピーを作成し、これらの2つの場所で同期することができる。
 GitHub.comにリポジトリを作成した場合、それはリモートリポジトリとなる。
 リモートリポジトリをそのまま自分のローカル環境（自分のPC上）へ複製（コピー）する機能。
