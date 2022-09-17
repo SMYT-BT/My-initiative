@@ -139,6 +139,7 @@ GitHub.comにリポジトリを作成した場合、それはリモートリポ�
 - git rm -rf .git：git 削除　
 
 - git ls-files --stage：インデックスの中身を見ることができる。
+
 ＜情報元＞https://zenn.dev/kaityo256/articles/inside_the_index
 
 - git config --global user.name：ユーザーネーム確認
