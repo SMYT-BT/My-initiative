@@ -59,108 +59,121 @@ GitHubにソースコードをホスティングすることで複数人のソ�
   この個々人のリポジトリを「ローカルリポジトリ」、集約先となるリポジトリを「リモートリポジトリ」と呼ぶ。
 
 ・基本的な流れ
-①ローカルリポジトリにリモートデータの取得
-②ローカルリポジトリでファイル更新を履歴に反映
-③リモートリポジトリでローカルのデータを反映
+1. ローカルリポジトリにリモートデータの取得
+2. ローカルリポジトリでファイル更新を履歴に反映
+3. リモートリポジトリでローカルのデータを反映
 
 ＜補足＞
-・コメント、承認：レビューの申請と承認 → レビューで承認がないと統合されない
-・複数の各々のブランチを統合（マージ）するのが主流
-・ブランチを作成すると、そのコードはブランチを作成する前のコードから分析し、「別の時間を生きる」こととなる。
-・別の時間を生きたコードは自分だけの経験（変更）を蓄える。
-・上記プロセスに問題がなければ、親（分岐元）は「マージ（記憶を統合）を要求」する
-・マージは基本リモートリポジトリで実施する
+- コメント、承認：レビューの申請と承認 → レビューで承認がないと統合されない
+- 複数の各々のブランチを統合（マージ）するのが主流
+- ブランチを作成すると、そのコードはブランチを作成する前のコードから分析し、「別の時間を生きる」こととなる。
+- 別の時間を生きたコードは自分だけの経験（変更）を蓄える。
+- 上記プロセスに問題がなければ、親（分岐元）は「マージ（記憶を統合）を要求」する
+- マージは基本リモートリポジトリで実施する
 
 ◇集中型
+
 SVN【中央集権型】
+
 ※管理するサーバーは自分で立てる
 
-・バージョンを管理するリポジトリは単一。
-・リポジトリが壊れても、スナップショットで復旧が可能。
-・Gitに比べて容易であり、学習コストが低い。
-・特定の場所にあるリポジトリへの接続が必須となる。
+- バージョンを管理するリポジトリは単一。
+- リポジトリが壊れても、スナップショットで復旧が可能。
+- Gitに比べて容易であり、学習コストが低い。
+- 特定の場所にあるリポジトリへの接続が必須となる。
 ## ■リモートリポジトリとは
 インターネット上あるいはその他ネットワーク上のどこかに存在するプロジェクトのこと。
+
 （※リモート URL は、「コードがここに保存されています」ということを表現する Git のしゃれた方法）
+
 複数のリモートリポジトリを持つこともでき、それぞれを読み込み専用にしたり読み書き可能にしたりすることもできる。
+
 （※fetch=書き込み、push=読み込み git ,「remote -v」で確認できる）
 
 他のメンバーと共同作業を進めていくにあたっては、これらのリモートリポジトリを管理し、必要に応じてデータのプル・プッシュを行うことで作業を分担していくことになる。
+
 リモートリポジトリの管理には「リモートリポジトリの追加」「不要になったリモートリポジトリの削除」「リモートブランチの管理や追跡対象/追跡対象外の設定」などさまざまな作業が含まれる。
 
 
 ＜リモートリポジトリについて＞https://docs.github.com/ja/get-started/getting-started-with-git/about-remote-repositories
+
 ＜リポジトリ作成方法＞https://qiita.com/daisuke19840125/items/75caaef6bc0983524260
 
 ＜リモート操作＞https://git-scm.com/book/ja/v2/Git-%E3%81%AE%E5%9F%BA%E6%9C%AC-%E3%83%AA%E3%83%A2%E3%83%BC%E3%83%88%E3%81%A7%E3%81%AE%E4%BD%9C%E6%A5%AD
 ## ■Git Clone とは
 GitHub.com からリポジトリのクローンを作成して、コンピュータ上にローカルコピーを作成し、マージの競合の修正、ファイルの追加または削除、より大きなコミットのプッシュなど、2つの場所で同期することができる。
+
 GitHub.comにリポジトリを作成した場合、それはリモートリポジトリとなる。
+
 リモートリポジトリをそのまま自分のローカル環境（自分のPC上）へ複製（コピー）する機能。
 
 リポジトリをクローンすると、その時点で GitHub.com にあるすべてのリポジトリデータの完全なコピーがプルダウンされる。
+
 これには、プロジェクトのすべてのファイルとフォルダのすべてのバージョンも含まれる。
 
 ＜リポジトリのクローンについて＞https://docs.github.com/ja/repositories/creating-and-managing-repositories/cloning-a-repository
 ## ■インデックス とは
 リポジトリに保存されている情報とワークツリー（作業している場所）との差（変更箇所）を記録する場所。
+
 その差（変更箇所）だけをリポジトリに保存していく仕組み
 
 ＜インデックスとは＞https://tetoblog.org/2021/06/git-index/
+
 ＜ワークツリーとインデックス＞https://u-tan-web.com/git-worktree-index/
 ## ■ 機能
-・ブランチ保護：GitHubは直接コミット禁止によるブランチの保護（保護されたブランチ/protected branches）を提供する。
+- ブランチ保護：GitHubは直接コミット禁止によるブランチの保護（保護されたブランチ/protected branches）を提供する。
 
-・GitHubにホストされたリモートレポジトリはgit pushにより更新できる。
-→これを許容すると意図しないバグによりpushを受けたブランチが壊れるリスクがある。
+- GitHubにホストされたリモートレポジトリはgit pushにより更新できる。
+→ これを許容すると意図しないバグによりpushを受けたブランチが壊れるリスクがある。
 
-・GitHubは「指定ブランチへの直接コミット禁止 + チェック通過Pull Requestを介したmerge/rebase許可」という機能を提供することで、ブランチに問題のあるコミットが混入しないことを可能にしている。
+- GitHubは「指定ブランチへの直接コミット禁止 + チェック通過Pull Requestを介したmerge/rebase許可」という機能を提供することで、ブランチに問題のあるコミットが混入しないことを可能にしている。
 
 ＜ブランチについて＞https://backlog.com/ja/git-tutorial/stepup/01/
+
 ＜ブランチのメリット＞https://www.sejuku.net/blog/71071
 
-・GitHub CLI：コマンドライン上でGitHubの操作を行えるCLIツール。
+- GitHub CLI：コマンドライン上でGitHubの操作を行えるCLIツール。
 新規でリポジトリを作成したい場合やPRを確認したい場合などに、ブラウザを開かなくても操作できる。
 ## ■ 課題で使用したコマンド
-・git rm -rf {レポジトリ名} ：git clone 削除
-・git rm -rf .git：git 削除　
+- git rm -rf {レポジトリ名} ：git clone 削除
+- git rm -rf .git：git 削除　
 
-・git ls-files --stage：インデックスの中身を見ることができる。
+- git ls-files --stage：インデックスの中身を見ることができる。
 ＜情報元＞https://zenn.dev/kaityo256/articles/inside_the_index
 
-・git config --global user.name：ユーザーネーム確認
-・git config --global user.email：メールアドレス確認
-・git checkout「ブランチ名」：ブランチへの移動
-・git branch：ブランチ一覧表示
-・git branch 「ブランチ名」：ブランチ追加
-・git branch -d 「ブランチ名」：ブランチ削除
-・git branch -D 「ブランチ名」：ブランチ強制削除
-・git clone：リモートリポジトリのクローンを生成
-・git pull：gitリポジトリにある最新のソースコードを取得
-・git add：インデックスにファイル等を認識させる
-・git commit：リモートリポジトリにファイル更新の差異を登録する
-・git push：リモートリポジトリへ差異を連携する
+- git config --global user.name：ユーザーネーム確認
+- git config --global user.email：メールアドレス確認
+- git checkout「ブランチ名」：ブランチへの移動
+- git branch：ブランチ一覧表示
+- git branch 「ブランチ名」：ブランチ追加
+- git branch -d 「ブランチ名」：ブランチ削除
+- git branch -D 「ブランチ名」：ブランチ強制削除
+- git clone：リモートリポジトリのクローンを生成
+- git pull：gitリポジトリにある最新のソースコードを取得
+- git add：インデックスにファイル等を認識させる
+- git commit：リモートリポジトリにファイル更新の差異を登録する
+- git push：リモートリポジトリへ差異を連携する
 
-・git remote -v：他のリポジトリへのリモート接続の一覧を表示するコマンド
-・git remote add リモートリポジトリの追加
-・git remote rename A B リモートリポジトリの命名変更
+- git remote -v：他のリポジトリへのリモート接続の一覧を表示するコマンド
+- git remote add リモートリポジトリの追加
+- git remote rename A B リモートリポジトリの命名変更
 ＜Gitのリポジトリ切り替え方法＞https://kde.hateblo.jp/entry/2018/02/18/200459
 
-・git remote set-url origin [pushしたいurl]：pushするリポジトリのURLを変更して、pushする
+- git remote set-url origin [pushしたいurl]：pushするリポジトリのURLを変更して、pushする
 ＜情報元＞https://ishidalog.com/?p=140
 
 ＜Gitコマンド一覧＞https://qiita.com/uhooi/items/c26c7c1beb5b36e7418e
 ## ★ Q/A ★
-◇GitHub　ReadMeとは
+- GitHub　ReadMeとは
 リポジトリに訪れた人に "このプロジェクトが何なのか" をわかりやすく伝えるための説明書のようなもの。
 ＜参考＞https://cpp-learning.com/readme/
 
-◇ユーザー設定確認方法
+- ユーザー設定確認方法
 https://docs.github.com/ja/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/remembering-your-github-username-or-email
 
-◇マークダウン 記述方法
+- マークダウン 記述方法
 ＜参考＞https://qiita.com/tbpgr/items/989c6badefff69377da7
 
-◇プルリクエストとは
+- プルリクエストとは
 ＜参考資料＞https://phoeducation.work/entry/20210913/1631487480
 
