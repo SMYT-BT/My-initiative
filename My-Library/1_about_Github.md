@@ -157,23 +157,26 @@ GitHub.comにリポジトリを作成した場合、それはリモートリポ�
 - git remote -v：他のリポジトリへのリモート接続の一覧を表示するコマンド
 - git remote add リモートリポジトリの追加
 - git remote rename A B リモートリポジトリの命名変更
+
 ＜Gitのリポジトリ切り替え方法＞https://kde.hateblo.jp/entry/2018/02/18/200459
 
 - git remote set-url origin [pushしたいurl]：pushするリポジトリのURLを変更して、pushする
+
 ＜情報元＞https://ishidalog.com/?p=140
 
 ＜Gitコマンド一覧＞https://qiita.com/uhooi/items/c26c7c1beb5b36e7418e
 ## ★ Q/A ★
 - GitHub　ReadMeとは
 リポジトリに訪れた人に "このプロジェクトが何なのか" をわかりやすく伝えるための説明書のようなもの。
+
 ＜参考＞https://cpp-learning.com/readme/
-
 - ユーザー設定確認方法
+
 https://docs.github.com/ja/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/remembering-your-github-username-or-email
-
 - マークダウン 記述方法
-＜参考＞https://qiita.com/tbpgr/items/989c6badefff69377da7
 
+＜参考＞https://qiita.com/tbpgr/items/989c6badefff69377da7
 - プルリクエストとは
+
 ＜参考資料＞https://phoeducation.work/entry/20210913/1631487480
 
