@@ -112,7 +112,7 @@ GitHub.comにリポジトリを作成した場合、それはリモートリポ�
 これには、プロジェクトのすべてのファイルとフォルダのすべてのバージョンも含まれる。
 
 ＜リポジトリのクローンについて＞https://docs.github.com/ja/repositories/creating-and-managing-repositories/cloning-a-repository
-## ■インデックス とは
+## ■インデックス(working tree) とは
 リポジトリに保存されている情報とワークツリー（作業している場所）との差（変更箇所）を記録する場所。
 
 その差（変更箇所）だけをリポジトリに保存していく仕組み
