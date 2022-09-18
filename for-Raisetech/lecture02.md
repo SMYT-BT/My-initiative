@@ -1,5 +1,5 @@
 ### ■下準備　Gitのインストール
-＜参考>
+＜参考＞
 【Gitのインストール：https://www.curict.com/item/60/60bfe0e.html】
 
 ### ■ GitHubについて
