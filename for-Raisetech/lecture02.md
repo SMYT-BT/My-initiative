@@ -2,7 +2,7 @@
 ＜参考＞
 【Gitのインストール：https://www.curict.com/item/60/60bfe0e.html】
 
-### ■ GitHubについて
+### ■ GitHubにとは
 
 GitHub（ギットハブ） サービス提供元：米 GitHub社（保守対応も含め）
 ※2018年 マイクロソフトの傘下
