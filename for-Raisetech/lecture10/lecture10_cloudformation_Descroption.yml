@@ -1,0 +1,246 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description:
+  Create for Riasetech
+
+Resources:
+  Raise-VPC:
+    Type: AWS::EC2::VPC										#VPC作成するタイプを指定
+    Properties:
+      CidrBlock: 10.0.0.0/16										#CidrBlockを指定
+      EnableDnsSupport: true										 # VPC に対して DNS 解決がサポートされているか
+      EnableDnsHostnames: true									 # VPC 内に起動されるインスタンスが DNS ホスト名を取得するか
+      Tags:														#タグの指定、Key、Valueの順に記載する
+        - Key: Name
+          Value: Raise-VPC
+
+
+  Raise-IGW:													#IGWの作成
+    Type: AWS::EC2::InternetGateway								#インターネットゲートウェイ作成するタイプを指定
+    Properties:
+      Tags:														#タグの指定、Key、Valueの順に記載する
+        - Key: Name
+          Value: Raise-IGW
+
+  AttachGateway:												#IGWをVPCにアタッチ
+    Type: AWS::EC2::VPCGatewayAttachment						#IGWをVPCにアタッチするタイプを指定
+    Properties:
+      VpcId: !Ref Raise-VPC										#【!Ref】は設定済みのリソースを指定できる
+      InternetGatewayId: !Ref RaiseIGW
+
+
+
+  PublicSubNet1:												#パブリックサブネット1の作成
+    Type: AWS::EC2::Subnet										#サブネットを作成するタイプを指定
+    Properties:
+      AvailabilityZone: ap-northeast-1a								#AZの指定
+      VpcId: !Ref RaiseVPC										#【!Ref】で上で設定したVPCを指定
+      CidrBlock: 10.0.16.0/20										#CidrBlockを指定
+      Tags:														#タグの指定、Key、Valueの順に記載する
+        - Key: Name
+          Value: Public-SubNet1
+
+  PublicSubNet2:												#パブリックサブネット2の作成
+    Type: AWS::EC2::Subnet										#サブネットを作成するタイプを指定
+    Properties:
+      AvailabilityZone: ap-northeast-1c								#AZの指定
+      VpcId: !Ref RaiseVPC										#【!Ref】で上で設定したVPCを指定
+      CidrBlock: 10.0.0.0/20										#CidrBlockを指定
+      Tags:														#タグの指定、Key、Valueの順に記載する
+        - Key: Name
+          Value: Public-SubNet2
+
+  PrivateSubNet1:												#プライベートサブネット1の作成
+    Type: AWS::EC2::Subnet										#サブネットを作成するタイプを指定
+    Properties:
+      AvailabilityZone: ap-northeast-1a								#AZの指定
+      VpcId: !Ref RaiseVPC										#【!Ref】で上で設定したVPCを指定
+      CidrBlock: 10.0.128.0/20										#CidrBlockを指定
+      Tags:														#タグの指定、Key、Valueの順に記載する
+        - Key: Name
+          Value: Private-SubNet1
+
+  PrivateSubNet2:												#プライベートサブネット2の作成
+    Type: AWS::EC2::Subnet										#サブネットを作成するタイプを指定
+    Properties:
+      AvailabilityZone: ap-northeast-1c								#AZの指定
+      VpcId: !Ref RaiseVPC										#【!Ref】で上で設定したVPCを指定
+      CidrBlock: 10.0.112.0/20										#CidrBlockを指定
+      Tags:														#タグの指定、Key、Valueの順に記載する
+        - Key: Name
+          Value: Private-SubNet2
+
+
+  PublicRouteTable1:											#ルートテーブルの作成
+    Type: AWS::EC2::RouteTable									#ルートテーブルを作成するタイプを指定
+    Properties:
+      VpcId: !Ref RaiseVPC										#【!Ref】で上で設定したVPCを指定
+      Tags:														#タグの指定、Key、Valueの順に記載する
+        - Key: Name
+          Value: TEST-RouteTable1
+
+  PrivateRouteTable1:											#ルートテーブルの作成
+    Type: AWS::EC2::RouteTable									#ルートテーブルを作成するタイプを指定
+    Properties:
+      VpcId: !Ref RaiseVPC										#【!Ref】で上で設定したVPCを指定
+      Tags:														#タグの指定、Key、Valueの順に記載する
+        - Key: Name
+          Value: TEST-RouteTable2
+
+  Routing1:													#ルートテーブルの内容を設定※プライベート不要（サブネット-インターネット間のルーティングをルートテーブルに設定）
+    Type: AWS::EC2::Route										#ルートテーブルに設定を登録するタイプを指定
+    Properties:
+      RouteTableId: !Ref PublicRouteTable1							#【!Ref】で適用するルートテーブルを指定
+      DestinationCidrBlock: 0.0.0.0/0								#許可するCidrBlockを指定
+      GatewayId: !Ref RaiseIGW									#【!Ref】で適用するIGWを指定
+
+※Privateの場合、Routeは不要
+
+  PublicRouteTableAssociate1:									#パブリックルートテーブルをサブネットに関連付け
+    Type: AWS::EC2::SubnetRouteTableAssociation					#パブリックルートテーブルをサブネットに関連付けするタイプを指定
+    Properties:
+      SubnetId: !Ref PublicSubNet1									#【!Ref】で適用するサブネットを指定
+      RouteTableId: !Ref PublicRouteTable1							#【!Ref】で適用するルートテーブルを指定
+
+  PublicRouteTableAssociate2:									#ルートテーブルをサブネットに関連付け
+    Type: AWS::EC2::SubnetRouteTableAssociation					#ルートテーブルをサブネットに関連付けするタイプを指定
+    Properties:
+      SubnetId: !Ref PublicSubNet2									#【!Ref】で適用するサブネットを指定
+      RouteTableId: !Ref PublicRouteTable1							#【!Ref】で適用するルートテーブルを指定
+
+  PrivateRouteTableAssociate1:									#プライベートルートテーブルをサブネットに関連付け
+    Type: AWS::EC2::SubnetRouteTableAssociation					#プライベートルートテーブルをサブネットに関連付けするタイプを指定
+    Properties:
+      SubnetId: !Ref PrivateSubNet1								#【!Ref】で適用するサブネットを指定
+      RouteTableId: !Ref PrivateRouteTable1							#【!Ref】で適用するルートテーブルを指定
+
+
+  PublicSecurityGroup:												#セキュリティグループの作成
+    Type: AWS::EC2::SecurityGroup									#セキュリティグループを作成するタイプを指定
+    Properties:
+      GroupName: Public-SSH-SecurityGroup								#ルールの名前
+      GroupDescription: TEST-SecurityGroup								#ルールの説明
+      VpcId: !Ref RaiseVPC											#【!Ref】で上で設定したVPCを指定
+      SecurityGroupIngress:											#接続許可（複数設定の場合は"-"で区切って連続して書く）
+      - 
+        IpProtocol: tcp												#プロトコル指定
+        CidrIp: 0.0.0.0/0												#送信元IPアドレス
+        FromPort: "22"												#送信元ポート
+        ToPort: "22"													#送信先ポート
+      - 
+        IpProtocol: tcp												#プロトコルHTTP指定
+        CidrIp: 0.0.0.0/0
+        FromPort: "80"
+        ToPort: "80"
+
+      - 
+        IpProtocol: tcp												#プロトコルHTTPS指定
+        CidrIp: 0.0.0.0/0
+        FromPort: "443"
+        ToPort: "443"
+
+      SecurityGroupEgress:											#アウトバウンドを定義
+      - 
+        CidrIp: 0.0.0.0/0												#送信元IPアドレス
+        IpProtocol: -1													#全てのプロトコルを定義
+
+      Tags:
+        - Key: Name
+          Value: Public-SecurityGroup
+
+
+  RDSSecurityGroup:												#セキュリティグループの作成
+    Type: AWS::EC2::SecurityGroup									#セキュリティグループを作成するタイプを指定
+    Properties:
+      GroupName: Private-SecurityGroup								#ルールの名前
+      GroupDescription: TEST-SecurityGroup								#ルールの説明
+      VpcId: !Ref Raise-VPC											#【!Ref】で上で設定したVPCを指定
+      SecurityGroupEgress:											#アウトバウンドを定義
+        - CidrIp: 0.0.0.0/0												#送信元IPアドレス
+          IpProtocol: -1												#全てのプロトコルを定義
+
+      Tags:
+        - Key: Name
+          Value: RDS-SecurityGroup
+
+
+  NewKeyPair:													#キーペア―の作成
+    Type: 'AWS::EC2::KeyPair'
+    Properties:
+      KeyName: KeyPair20221030										#キーペア―の名前
+      
+  PublicEC2Instance:												#EC2（インスタンス作成）
+    Type: AWS::EC2::Instance											#インスタンスを作成するタイプを指定
+    Properties:
+      ImageId: ami-09ebacdc178ae23b7									#AMIのID(Amazon Linux 2 AMI (HVM), SSD Volume Type)
+      KeyName: For-Raisetech_20220730.pem							#キーペア（作成済みのキーペアを指定）
+      InstanceType: t2.micro											#インスタンスタイプ
+      InstanceInitiatedShutdownBehavior: stop							#シャットダウン動作
+      Tenancy: default												#テナンシー
+      NetworkInterfaces:												#インターフェースの設定
+        - AssociatePublicIpAddress: "true"									# パブリックIPを自動で割り振り
+          DeviceIndex: "0"												#設定を行うENIの番号
+          SubnetId: !Ref TestSubNet1										#【!Ref】で上で設定したサブネット指定
+          GroupSet:
+            - !Ref New-SecurityGroup										# 上のセキュリティグループを指定
+          PrivateIpAddress: 10.0.22.252									# プライベートIPアドレス指定
+
+      Tags:															#タグの指定、Key、Valueの順に記載する
+          - Key: Name
+            Value: Public_linux_instance1
+
+
+  PublicEC2Instance2:												#二つ目のパブリックインスタンス作成
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-09ebacdc178ae23b7
+      KeyName: !Ref NewKeyPair
+      InstanceType: t2.micro
+      InstanceInitiatedShutdownBehavior: stop
+      Tenancy: default
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          SubnetId: !Ref PublicSubNet2
+          GroupSet:
+            - !Ref PublicSecurityGroup
+          PrivateIpAddress: 10.0.7.217
+
+      Tags:
+          - Key: Name
+            Value: Private_linux_instance2
+
+
+  RDSSubnetGroup:												#RDSサブネットグループを作成
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: "dedicated to ut-rds"						#説明
+      DBSubnetGroupName: "ut_dbsubnet"								#DBサブネットグループ名
+      SubnetIds:
+      - !Ref PrivateSubNet1											#グループ化するサブネット
+      - !Ref PrivateSubNet2											#グループ化するサブネット
+      Tags:
+      -
+        Key: "Name"
+        Value: "RDS_Formation_test"
+
+  RDSInstance:													#RDSの作成
+    Type: "AWS::RDS::DBInstance"
+    DeletionPolicy: Snapshot											#削除時、リソースをスナップショットで保持
+    Properties:
+      DBInstanceIdentifier: TestCloudMySQL								#設定したいDBインスタンス識別子を入力
+      DBName: sample_database										#DBインスタンス名
+      Engine: mysql													#DBエンジンを指定
+      MultiAZ: true													#マルチAZを有効
+      MasterUsername: admin											#マスターユーザー名指定
+      MasterUserPassword: Sigsig34573190								#パスワードの設定
+      DBInstanceClass: db.t3.micro										#DBインスタンスタイプを入力
+      AllocatedStorage: '20'											#コストを考慮して最小値設定
+      DBSubnetGroupName: !Ref RDSSubnetGroup							#RDSサブネットグループの指定
+      PubliclyAccessible: true											#パブリックアクセスを無効化
+      VPCSecurityGroups:												#RDS用のセキュリティグループを指定
+        - !Ref RDSSecurityGroup
+      Tags:
+      -
+        Key: "Name"
+        Value: "ut-rds"
