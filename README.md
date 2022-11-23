@@ -9,6 +9,5 @@
 # インデックス
 1. My-Library：調べ得た学習内容を管理しています。
 2. for-Raisetech：課題に対しての提出物を管理しています。
-3. 
 # ひとこと
 Why dont you do your best ? by Jiro Ueda
