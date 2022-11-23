@@ -11,4 +11,4 @@
 2. for-Raisetech：課題に対しての提出物を管理しています。
 3. 
 # ひとこと
-成せば成る！
+Why dont you do your best ? by Jiro Ueda
