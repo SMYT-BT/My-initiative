@@ -1,19 +1,15 @@
-#------------------------------コメント
-#   Terraform Configure
-#------------------------------
-
-# Terraform全体にかかわる設定
+# ----------------------
+# Terraform 基本設定
+# ----------------------
 terraform {
-  # Terraformのバージョン設定
   required_version = ">=0.13"
-  # プロバイダーの指定(AWSの指定)
   required_providers {
     aws = {
-      source = "hashicorp/aws"
-      # 3.0以上
+      source  = "hashicorp/aws"
       version = "~>3.0"
     }
   }
+  # tfstate上の情報をS3に移動させる
   backend "s3" {
     bucket  = "tasty-log-udemy-20221121"
     key     = "tastylog-dev.tfstate"
@@ -21,22 +17,29 @@ terraform {
     profile = "terraform"
   }
 }
-#------------------------------
-#  Provider(プロバイダーの設定)
-#------------------------------
+# ----------------------
+# Provider
+# ----------------------
 provider "aws" {
-  # .aws配下に作成したProfile-terraformを指定
   profile = "terraform"
   region  = "ap-northeast-1"
 }
-#------------------------------
-# Variables(外から変数を定義する)
-#------------------------------
-# プロジェクト名を文字列に設定
+# 別リージョン向け ヴァージニア用に追加【任意】複数リージョンに対しての操作
+provider "aws" {
+  alias = "virginia"
+  profile = "terraform"
+  region  = "us-east-1"
+}
+# ----------------------
+# 外から定義できる変数
+# ----------------------
 variable "project" {
   type = string
 }
-# 環境名を文字列に設定
 variable "environment" {
+  type = string
+}
+# Rute53のドメイン用
+variable "domain" {
   type = string
 }

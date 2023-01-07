@@ -1,11 +1,9 @@
-# ------------------------
-# RDS パラメータグループ
-# ------------------------
+# ----------------------
+# RDSの作成
+# ----------------------
 resource "aws_db_parameter_group" "mysql_standalone_parametergroup" {
-  name = "${var.project}-${var.environment}-mysql-standalone-parametergroup"
-  # MySQLのバージョンを指定   
+  name   = "${var.project}-${var.environment}-mysql-standalone-parametergroup"
   family = "mysql8.0"
-
   parameter {
     name  = "character_set_database"
     value = "utf8mb4"
@@ -15,12 +13,14 @@ resource "aws_db_parameter_group" "mysql_standalone_parametergroup" {
     value = "utf8mb4"
   }
 }
-# ------------------------
-# RDS オプショングループ
-# ------------------------
+# ----------------------
+# RDS オプショングループの作成
+# ----------------------
 resource "aws_db_option_group" "mysql_standalone_optiongroup" {
   name                 = "${var.project}-${var.environment}-mysql-standalone-optiongroup"
+  # 関連付けるエンジン名（MySQLなど）
   engine_name          = "mysql"
+  # 関連付けるエンジンバージョン
   major_engine_version = "8.0"
 }
 # ------------------------
@@ -99,6 +99,4 @@ resource "aws_db_instance" "mysql_standalone" {
     Project = var.project
     Env     = var.environment
   }
-
-
 }
