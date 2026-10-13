@@ -6,8 +6,30 @@
 # 学習上、使用するツール
 - GitHub
 - AWS
-# インデックス
-1. My-Library：調べ得た学習内容を管理しています。
-2. for-Raisetech：課題に対しての提出物を管理しています。
-# ひとこと
-Why dont you do your best ? by Jiro Ueda
+------------------------------
+# 学習概要
+## 業務で利用するAI
+・perplexity
+
+・ChatGPT
+
+## 開発環境
+### Visual Studio Code
+
+・複数プラグインを導入して自分オリジナルにできる
+
+→YAML
+
+→CloudFormation Linter
+
+→HashiCorp Terraform
+
+→Prettier - Code formatter
+
+→Markdown All in One
+
+→Draw.io Integration
+
+→Git History
+
+→Markdown All in One
