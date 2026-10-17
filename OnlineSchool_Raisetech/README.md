@@ -33,3 +33,17 @@
 →Git History
 
 →Markdown All in One
+
+→Extension Pack for Java
+
+●[spring boot](https://start.spring.io/)
+
+JavaでのWebアプリケーションやマイクロサービス開発を簡単かつ迅速に行うためのオープンソースフレームワーク
+
+⇒ 実行結果を表示させるために、Java21が必要⇒インストール
+
+・SpringbootはSNAPSHOTのついていないバージョンを選択
+
+・.vscode フォルダに格納
+
+⇒Java21をインストールしないとうまくいかない
