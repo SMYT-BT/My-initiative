@@ -1,0 +1,246 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description:
+  Create for Riasetech
+
+Resources:
+  RaiseVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: Raise-VPC
+
+
+  RaiseIGW:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: Raise-IGW
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref RaiseVPC
+      InternetGatewayId: !Ref RaiseIGW
+
+
+
+  PublicSubNet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-1a
+      VpcId: !Ref RaiseVPC
+      CidrBlock: 10.0.16.0/20
+      Tags:
+        - Key: Name
+          Value: Public-SubNet1
+
+  PublicSubNet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-1c
+      VpcId: !Ref RaiseVPC
+      CidrBlock: 10.0.0.0/20
+      Tags:
+        - Key: Name
+          Value: Public-SubNet2
+
+  PrivateSubNet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-1a
+      VpcId: !Ref RaiseVPC
+      CidrBlock: 10.0.128.0/20
+      Tags:
+        - Key: Name
+          Value: Private-SubNet1
+
+  PrivateSubNet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-1c
+      VpcId: !Ref RaiseVPC
+      CidrBlock: 10.0.112.0/20
+      Tags:
+        - Key: Name
+          Value: Private-SubNet2
+
+
+  PublicRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref RaiseVPC
+      Tags:
+        - Key: Name
+          Value: Public-RouteTable1
+
+  PrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref RaiseVPC
+      Tags:
+        - Key: Name
+          Value: Private-RouteTable1
+
+  Routing1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref RaiseIGW
+
+
+
+  PublicRouteTableAssociate1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubNet1
+      RouteTableId: !Ref PublicRouteTable1
+
+  PublicRouteTableAssociate2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubNet2
+      RouteTableId: !Ref PublicRouteTable1
+
+  PrivateRouteTableAssociate1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubNet1
+      RouteTableId: !Ref PrivateRouteTable1
+
+
+  PublicSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: Public-SSH-SecurityGroup
+      GroupDescription: TEST-SecurityGroup
+      VpcId: !Ref RaiseVPC
+      SecurityGroupIngress:
+      - 
+        IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+        FromPort: "22"
+        ToPort: "22"
+      - 
+        IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+        FromPort: "80"
+        ToPort: "80"
+
+      - 
+        IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+        FromPort: "443"
+        ToPort: "443"
+
+      SecurityGroupEgress:
+      - 
+        CidrIp: 0.0.0.0/0
+        IpProtocol: -1
+
+      Tags:
+        - Key: Name
+          Value: Public-SecurityGroup
+
+
+  RDSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: Private-SecurityGroup
+      GroupDescription: TEST-SecurityGroup
+      VpcId: !Ref RaiseVPC
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: -1
+
+      Tags:
+        - Key: Name
+          Value: RDS-SecurityGroup
+
+
+  NewKeyPair:
+    Type: 'AWS::EC2::KeyPair'
+    Properties:
+      KeyName: KeyPair20221030
+
+  PublicEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-09ebacdc178ae23b7
+      KeyName: !Ref NewKeyPair
+      InstanceType: t2.micro
+      InstanceInitiatedShutdownBehavior: stop
+      Tenancy: default
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          SubnetId: !Ref PublicSubNet1
+          GroupSet:
+            - !Ref PublicSecurityGroup
+          PrivateIpAddress: 10.0.22.252
+
+      Tags:
+          - Key: Name
+            Value: Public_linux_instance1
+
+
+  PublicEC2Instance2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-09ebacdc178ae23b7
+      KeyName: !Ref NewKeyPair
+      InstanceType: t2.micro
+      InstanceInitiatedShutdownBehavior: stop
+      Tenancy: default
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          SubnetId: !Ref PublicSubNet2
+          GroupSet:
+            - !Ref PublicSecurityGroup
+          PrivateIpAddress: 10.0.7.217
+
+      Tags:
+          - Key: Name
+            Value: Private_linux_instance2
+
+
+  RDSSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: "dedicated to ut-rds"
+      DBSubnetGroupName: "ut_dbsubnet"
+      SubnetIds:
+      - !Ref PrivateSubNet1
+      - !Ref PrivateSubNet2
+      Tags:
+      -
+        Key: "Name"
+        Value: "RDS_Formation_test"
+
+  RDSDevInstance:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Snapshot
+    Properties:
+      DBInstanceIdentifier: TestCloudMySQL
+      DBName: sample_database
+      Engine: mysql
+      MultiAZ: true
+      MasterUsername: admin
+      MasterUserPassword: Sigsig34573190
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: '20'
+      DBSubnetGroupName: !Ref RDSSubnetGroup
+      PubliclyAccessible: true
+      VPCSecurityGroups:
+        - !Ref RDSSecurityGroup
+      Tags:
+      -
+        Key: "Name"
+        Value: "ut-rds"
