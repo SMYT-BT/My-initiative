@@ -22,6 +22,8 @@
 
 →CloudFormation Linter
 
+→CloudFormation：YAML setup の内容をYAMLタグに反映
+
 →HashiCorp Terraform
 
 →Prettier - Code formatter
