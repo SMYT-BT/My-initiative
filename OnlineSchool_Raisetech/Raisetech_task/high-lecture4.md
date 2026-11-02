@@ -172,10 +172,10 @@ Resources:
       VpcId: !Ref MyVPC
       CidrBlock: 10.0.2.0/24
       AvailabilityZone: ap-northeast-1c
-      #★以下課題着手時のコメント
-      #ChatGPTの回答として、「AvailabilityZone:!Select」だった(同上)
-      # - 1
-      # - !GetAZs ''
+       #★以下課題着手時のコメント
+       #ChatGPTの回答として、「AvailabilityZone:!Select」だった(同上)
+       # - 1
+       # - !GetAZs ''
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
@@ -190,9 +190,9 @@ Resources:
       VpcId: !Ref MyVPC
       CidrBlock: 10.0.11.0/24
       AvailabilityZone: ap-northeast-1a
-      #ChatGPTの回答として、「AvailabilityZone:!Select」だった(同上)
-      #  - 0
-      #  - !GetAZs ''
+       #ChatGPTの回答として、「AvailabilityZone:!Select」だった(同上)
+       #  - 0
+       #  - !GetAZs ''
       Tags:
         - Key: Name
           Value: PrivateSubnet-A
@@ -203,9 +203,9 @@ Resources:
       VpcId: !Ref MyVPC
       CidrBlock: 10.0.12.0/24
       AvailabilityZone: ap-northeast-1c
-      #ChatGPTの回答として、「AvailabilityZone:!Select」だった(同上)
-      #  - 1
-      #  - !GetAZs ''
+       #ChatGPTの回答として、「AvailabilityZone:!Select」だった(同上)
+       #  - 1
+       #  - !GetAZs ''
       Tags:
         - Key: Name
           Value: PrivateSubnet-C
@@ -410,9 +410,9 @@ Resources:
   # ----------------------------------------
   MyRDS:
     Type: AWS::RDS::DBInstance
-    #以２つChatGPTからの出力結果：不要な設定と考えコメントアウト
-    #DeletionPolicy: Retain　CloudFormationスタックを削除したときに、対象リソースを削除せず残す設定
-    #UpdateReplacePolicy: Retain CloudFormationの更新によってリソースが置き換えられる際、古いリソースを削除せず残す設定
+     #以２つChatGPTからの出力結果：不要な設定と考えコメントアウト
+     #DeletionPolicy: Retain　CloudFormationスタックを削除したときに、対象リソースを削除せず残す設定
+     #UpdateReplacePolicy: Retain CloudFormationの更新によってリソースが置き換えられる際、古いリソースを削除せず残す設定
     Properties:
       AllocatedStorage: '20'
       AllowMajorVersionUpgrade: false #メジャーバージョンアップグレードを許可するかどうか
@@ -422,23 +422,23 @@ Resources:
       StorageType: gp2
       BackupRetentionPeriod: 1
       MasterUsername: admin
-      #以下、ChatGPTからの提案
-      #ManageMasterUserPassword: true⇒Secrets Managerによる自動管理を利用する方法がおすすめ。
-      #上記の場合、下記の「MasterUserPassword」は消すこと
+       #以下、ChatGPTからの提案
+       #ManageMasterUserPassword: true⇒Secrets Managerによる自動管理を利用する方法がおすすめ。
+       #上記の場合、下記の「MasterUserPassword」は消すこと
       MasterUserPassword: admin1101 #ChatGPTの回答不足部分
       DBName: appdb
       Engine: mysql
-      EngineVersion: 8.4.11 #無料枠で最新Verの自動適用方法はない
+      EngineVersion: 8.4.11 #★無料枠で最新Verの自動適用方法はない
       LicenseModel: general-public-license #ChatGPTの回答不足部分
       DBSubnetGroupName: !Ref MyDBSubnetGroup
       VPCSecurityGroups:
         - !Ref RDSSecurityGroup
-        #以下コメントアウトは、ChatGPTからの提案
+        #★以下コメントアウトは、ChatGPTからの提案
         #- !GetAtt RDSSecurityGroup.GroupId
         #🌟GetAttとは⇒!Ref RDSSecurityGroup と同じ結果であるが参照するのが属性である
-      #DBInstanceIdentifier: my-rds-database　RDSインスタンスを識別するための名前を指定
-      #PubliclyAccessible: false　RDSをインターネットから直接接続できる状態にするかを指定
-      #MultiAZ: false　Single AZ設定 RDSを複数のアベイラビリティーゾーン（AZ）にまたがって冗長化するかを指定
+        #DBInstanceIdentifier: my-rds-database　RDSインスタンスを識別するための名前を指定
+        #PubliclyAccessible: false　RDSをインターネットから直接接続できる状態にするかを指定
+        #MultiAZ: false　Single AZ設定 RDSを複数のアベイラビリティーゾーン（AZ）にまたがって冗長化するかを指定
       
       DeletionProtection: true #RDSインスタンスの削除保護を有効にする設定
       Tags:
