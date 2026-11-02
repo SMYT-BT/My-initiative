@@ -6,6 +6,7 @@
 
 ## 動作確認（対応事項）
 ### 1.ChatGPTでインフラ構成図を作成
+以下指示内容。
 ```
 AWSサービスにて、以下条件のインフラ構造が構築したいです。AWSサービスのサービスアイコンを用いて、インフラ構成図を作成してみてください。
 ・VPCを使うこと。
@@ -23,6 +24,7 @@ AWSサービスにて、以下条件のインフラ構造が構築したいで�
 
 ### 2.インフラ構成図をもとに、ChatGPTでコード文作成
 ※基本的な作成テンプレートを把握しており、手入力による工数削減をシミュレーション
+以下、指示内容
 ```
 今作成いただいた画像通りの内容をAWSサービス CloudFormation で構築できるように、YAML形式のコード文を記載してください。
 ```
@@ -32,21 +34,20 @@ AWSサービスにて、以下条件のインフラ構造が構築したいで�
 【1回目】インスタンスの作成まで（ELBとRDSの作成を省く）
 
 →既存のキーペアの指定ができておらず失敗
-
+```
 ・変更点：My KeyPair → Raisetech_App1020
-
+```
 ⇒作成成功
 
 【2回目】RDS の作成で失敗
-
+```
 →RDSの指定したバージョンが古かった
-
 ・変更点：8.0.41 → 8.4.11
-
+```
 ⇒最新のバージョンを指定して作成成功
-
+<img width="941" height="382" alt="image" src="https://github.com/user-attachments/assets/a61406b3-4b31-4dc5-9de0-1d5fdb696794" />
 ### 5.CloudFormation実演講座にて、答え合わせ。一部手を加える。
-※加筆箇所は「」にて記載
+※加筆箇所は「講義視聴後の加筆箇所」にて記載
 
 ## ChatGPT 出力結果修正箇所
 ### 各セキュリティグループ
@@ -63,13 +64,15 @@ AvailabilityZone: !Select
       - !GetAZs ''
 ```
 ### EC2
+以下内容を追記。
 ```
-・DisableApiTermination: false　を追加
-・InstanceInitiatedShutdownBehavior: stop　を追加
-・KeyName: Raisetech_App1020 を追加
-・Monitoring: false を追加
+・DisableApiTermination: false
+・InstanceInitiatedShutdownBehavior: stop
+・KeyName: Raisetech_App1020
+・Monitoring: false
 ```
 ### ALB(ターゲットグループ)
+以下内容を追記。
 ```
 ・HealthCheckPort: "traffic-port"
 ・HealthCheckIntervalSeconds: 10
@@ -79,6 +82,7 @@ AvailabilityZone: !Select
           Value: ALB-Target-Group
 ```
 ### RDS
+以下内容を追記。
 ```
 ・AllowMajorVersionUpgrade: false
 ・AutoMinorVersionUpgrade: true 
@@ -89,10 +93,14 @@ AvailabilityZone: !Select
 ・ Engine: mysql
 ・LicenseModel: general-public-license
 ```
-
-      PreferredBackupWindow: 15:00-16:00 #不足部分
-      PreferredMaintenanceWindow: sun:18:00-sun:19:00 #不足部分
-
+## 講義視聴後の加筆箇所
+### RDS
+```
+・AllowMajorVersionUpgrade: false
+・AutoMinorVersionUpgrade: true
+・PreferredBackupWindow: 15:00-16:00 #不足部分
+・PreferredMaintenanceWindow: sun:18:00-sun:19:00 #不足部分
+```
 
 ### 1. ユーザー登録成功時
 [スクリーンショット or 動画]
