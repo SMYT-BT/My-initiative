@@ -101,8 +101,8 @@ AvailabilityZone: !Select
 ```
 ・AllowMajorVersionUpgrade: false
 ・AutoMinorVersionUpgrade: true
-・PreferredBackupWindow: 15:00-16:00 #不足部分
-・PreferredMaintenanceWindow: sun:18:00-sun:19:00 #不足部分
+・PreferredBackupWindow: 15:00-16:00
+・PreferredMaintenanceWindow: sun:18:00-sun:19:00
 ```
 ## 工夫した点・学んだこと
 - 講義中でも取り上げられた、AI の回答結果が正しいとは限らないを実感できた
