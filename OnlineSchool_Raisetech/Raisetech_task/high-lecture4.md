@@ -90,7 +90,6 @@ AvailabilityZone: !Select
 ```
 ・AllowMajorVersionUpgrade: false
 ・AutoMinorVersionUpgrade: true 
-・Port: 3306 #不足部分
 ・StorageType: gp2
 ・Master User Password: admin1101
 ・DBName: appdb
