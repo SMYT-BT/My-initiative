@@ -1,1 +1,110 @@
-テスト
+## 実装内容（課題内容）
+これまでの講義内容を踏まえて、以下インフラ構成をAWSのCloudFormation を用いて作成すること
+- Web アプリケーションの作成を想定して、EC2 を利用
+- RDS を利用すること
+- ELB（ALB）を利用すること　※ただし、冗長化構成にはしない
+
+## 動作確認（対応事項）
+### 1.ChatGPTでインフラ構成図を作成
+```
+AWSサービスにて、以下条件のインフラ構造が構築したいです。AWSサービスのサービスアイコンを用いて、インフラ構成図を作成してみてください。
+・VPCを使うこと。
+・Internet Gateway を使うこと
+・冗長化構成として、ELBを使用する。
+・ELBのデータ転送先は２つであり、その先にEC2を作成する。
+・作成したEC2のデータベースとしてRDSを作成する。
+・RDSは終了保護をつけること
+・NAT Gateway は使わないこと。
+・無料利用枠を可能な限り利用すること
+・セキュリティグループを作る
+・EC2はパブリックサブネットの上に、RDSはプライベートサブネット上に作成
+```
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/e779df4c-b772-4933-beb3-a74f861b6df7" />
+
+### 2.インフラ構成図をもとに、ChatGPTでコード文作成
+※基本的な作成テンプレートを把握しており、手入力による工数削減をシミュレーション
+```
+今作成いただいた画像通りの内容をAWSサービス CloudFormation で構築できるように、YAML形式のコード文を記載してください。
+```
+### 3.コード文を検閲・添削・修正
+※修正箇所は「ChatGPT 出力結果修正箇所」にて記載
+### 4.トライ＆エラー
+【1回目】インスタンスの作成まで（ELBとRDSの作成を省く）
+
+→既存のキーペアの指定ができておらず失敗
+
+・変更点：My KeyPair → Raisetech_App1020
+
+⇒作成成功
+
+【2回目】RDS の作成で失敗
+
+→RDSの指定したバージョンが古かった
+
+・変更点：8.0.41 → 8.4.11
+
+⇒最新のバージョンを指定して作成成功
+
+### 5.CloudFormation実演講座にて、答え合わせ。一部手を加える。
+※加筆箇所は「」にて記載
+
+## ChatGPT 出力結果修正箇所
+### 各セキュリティグループ
+```
+・SecurityGroupEgressが抜けていた
+・ALBのセキュリティグループを削除
+```
+### サブネット
+```
+AZを指定：ap-northeast-1* など
+※以下変更前の記載
+AvailabilityZone: !Select
+      - 1
+      - !GetAZs ''
+```
+### EC2
+```
+・DisableApiTermination: false　を追加
+・InstanceInitiatedShutdownBehavior: stop　を追加
+・KeyName: Raisetech_App1020 を追加
+・Monitoring: false を追加
+```
+### ALB(ターゲットグループ)
+```
+・HealthCheckPort: "traffic-port"
+・HealthCheckIntervalSeconds: 10
+
+・Tags:     #Tags 丸ごと不足
+        - Key: Name
+          Value: ALB-Target-Group
+```
+### RDS
+```
+・AllowMajorVersionUpgrade: false
+・AutoMinorVersionUpgrade: true 
+・Port: 3306 #不足部分
+・StorageType: gp2
+・Master User Password: admin1101
+・DBName: appdb
+・ Engine: mysql
+・LicenseModel: general-public-license
+```
+
+      PreferredBackupWindow: 15:00-16:00 #不足部分
+      PreferredMaintenanceWindow: sun:18:00-sun:19:00 #不足部分
+
+
+### 1. ユーザー登録成功時
+[スクリーンショット or 動画]
+### 2. バリデーションエラー時
+[スクリーンショット or 動画]
+## 工夫した点・学んだこと
+- 〇〇の実装で悩みましたが、△△という方法で解決しました
+- エラーハンドリングについて理解が深まりました
+
+実行結果の添付方法
+必須の添付内容
+・正常系の動作
+期待通りに動作することを示すスクリーンショット/動画
+・異常系の動作（エラーハンドリングがある場合）
+エラーメッセージが適切に表示されることを示す
