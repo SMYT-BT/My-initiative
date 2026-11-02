@@ -289,8 +289,8 @@ Resources:
       SecurityGroupIngress:
         # HTTP
         - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
+          FromPort: 8080
+          ToPort: 8080
           CidrIp: 0.0.0.0/0
         # HTTPS
         #- IpProtocol: tcp
@@ -397,7 +397,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       Name: My-Target-Group
-      Port: 80
+      Port: 8080
       Protocol: HTTP
       VpcId: !Ref MyVPC
       HealthCheckProtocol: HTTP
@@ -409,7 +409,7 @@ Resources:
         HttpCode: '200'
       Targets:
         - Id: !Ref EC2Instance
-          Port: 80
+          Port: 8080
       Tags:     #Tags ChatGPTの回答不足部分
         - Key: Name
           Value: ALB-Target-Group
@@ -459,7 +459,7 @@ Resources:
       MasterUsername: admin
       #ManageMasterUserPassword: true⇒Secrets Managerによる自動管理を利用する方法がおすすめ。
       #上記の場合、下記の「MasterUserPassword」は消すこと
-      MasterUserPassword: admin1101 #ChatGPTの回答不足部分
+      ManageMasterUserPassword: true
       DBName: appdb
       Engine: mysql
       EngineVersion: 8.4.11 #無料枠で最新Verの自動適用方法はない
@@ -478,4 +478,4 @@ Resources:
       Tags:
         - Key: Name
           Value: MyRDS
-
+```
