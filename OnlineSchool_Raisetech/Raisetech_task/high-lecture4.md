@@ -319,24 +319,6 @@ Resources:
           Value: RDS-SG
 
   # ----------------------------------------
-  # Application Load Balancer
-  # ----------------------------------------
-  MyALB:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties:
-      Name: My-ALB
-      Scheme: internet-facing
-      Type: application
-      Subnets:
-        - !Ref PublicSubnetA
-        - !Ref PublicSubnetC
-      SecurityGroups:
-        - !Ref EC2SecurityGroup #EC2と同じポリシーを使う
-      Tags:
-        - Key: Name
-          Value: MyALB
-
-  # ----------------------------------------
   # EC2 Instance
   # ----------------------------------------
   EC2Instance:
@@ -378,7 +360,23 @@ Resources:
       Tags:     #Tags ChatGPTの回答不足部分
         - Key: Name
           Value: ALB-Target-Group
-
+  # ----------------------------------------
+  # Application Load Balancer
+  # ----------------------------------------
+  MyALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: My-ALB
+      Scheme: internet-facing
+      Type: application
+      Subnets:
+        - !Ref PublicSubnetA
+        - !Ref PublicSubnetC
+      SecurityGroups:
+        - !Ref EC2SecurityGroup #EC2と同じポリシーを使う
+      Tags:
+        - Key: Name
+          Value: MyALB
   # ----------------------------------------
   # ALB Listener
   # ----------------------------------------
@@ -431,16 +429,16 @@ Resources:
       EngineVersion: 8.4.11 #★無料枠で最新Verの自動適用方法はない
       LicenseModel: general-public-license #ChatGPTの回答不足部分
       DBSubnetGroupName: !Ref MyDBSubnetGroup
+      DeletionProtection: true #RDSインスタンスの削除保護を有効にする設定
       VPCSecurityGroups:
         - !Ref RDSSecurityGroup
         #★以下コメントアウトは、ChatGPTからの提案
         #- !GetAtt RDSSecurityGroup.GroupId
-        #🌟GetAttとは⇒!Ref RDSSecurityGroup と同じ結果であるが参照するのが属性である
+        #GetAttとは：!Ref RDSSecurityGroup と同じ結果であるが参照するのが属性である
         #DBInstanceIdentifier: my-rds-database　RDSインスタンスを識別するための名前を指定
         #PubliclyAccessible: false　RDSをインターネットから直接接続できる状態にするかを指定
         #MultiAZ: false　Single AZ設定 RDSを複数のアベイラビリティーゾーン（AZ）にまたがって冗長化するかを指定
       
-      DeletionProtection: true #RDSインスタンスの削除保護を有効にする設定
       Tags:
         - Key: Name
           Value: MyRDS
