@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 # 提出物であるCloudFormation のYAMLコードは[課題提出](https://github.com/SMYT-BT/My-initiative/blob/main/OnlineSchool_Raisetech/Raisetech_task/high-lecture4.md#%E8%AA%B2%E9%A1%8C%E6%8F%90%E5%87%BAcloudformation-yaml%E3%82%B3%E3%83%BC%E3%83%89)に記載しています。
 
+=======
+>>>>>>> origin/main
 ## 実装内容（課題内容）
 これまでの講義内容を踏まえて、以下インフラ構成をAWSのCloudFormation を用いて作成すること
 - Web アプリケーションの作成を想定して、EC2 を利用
