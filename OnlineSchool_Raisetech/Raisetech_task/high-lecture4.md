@@ -108,3 +108,340 @@ AvailabilityZone: !Select
 - 講義中でも取り上げられた、AI の回答結果が正しいとは限らないを実感できた
   （正しいとは限らない、とともに依頼した支持の不明確さもある）
 - 実現場での動きを想定して、ChatGPTにベースを作成＋必要箇所を修正という形式を実施
+
+## 課題提出：CloudFormation YAMLコード
+```
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS Web Application Infrastructure
+# ==========================================
+# Resources
+# ==========================================
+Resources:
+  # ----------------------------------------
+  # VPC
+  # ----------------------------------------
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: MyVPC
+  # ----------------------------------------
+  # Internet Gateway
+  # ----------------------------------------
+  MyInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: MyInternetGateway
+
+  AttachInternetGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref MyVPC
+      InternetGatewayId: !Ref MyInternetGateway
+  # ----------------------------------------
+  # Public Subnets
+  # ----------------------------------------
+  PublicSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: ap-northeast-1a
+        #★以下課題着手時のコメント
+        #ChatGPTの回答として、「AvailabilityZone:!Select」だった
+        #⇒リストの中から指定した番号の要素を取得する関数。
+        #番号は 0から始まる。
+        #⇒ 0:ap-northeast-1a, 1:ap-northeast-1c, 2:ap-northeast-1d
+        # - 0
+        # - !GetAZs ''  
+        #!GetAZs '' はAZの一覧を取得する関数。空文字 '' は現在のスタックが存在するリージョンを意味する。
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: PublicSubnet-A
+
+  PublicSubnetC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: ap-northeast-1c
+      #★以下課題着手時のコメント
+      #ChatGPTの回答として、「AvailabilityZone:!Select」だった(同上)
+      # - 1
+      # - !GetAZs ''
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: PublicSubnet-C
+
+  # ----------------------------------------
+  # Private Subnets
+  # ----------------------------------------
+  PrivateSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: 10.0.11.0/24
+      AvailabilityZone: ap-northeast-1a
+      #ChatGPTの回答として、「AvailabilityZone:!Select」だった(同上)
+      #  - 0
+      #  - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: PrivateSubnet-A
+
+  PrivateSubnetC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: 10.0.12.0/24
+      AvailabilityZone: ap-northeast-1c
+      #ChatGPTの回答として、「AvailabilityZone:!Select」だった(同上)
+      #  - 1
+      #  - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: PrivateSubnet-C
+
+  # ----------------------------------------
+  # Public Route Table
+  # ----------------------------------------
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: PublicRouteTable
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachInternetGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref MyInternetGateway
+
+  PublicSubnetAssociationA:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetA
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnetAssociationC:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetC
+      RouteTableId: !Ref PublicRouteTable
+
+  # ----------------------------------------
+  # Private Route Table
+  # No NAT Gateway
+  # ----------------------------------------
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: PrivateRouteTable
+
+  PrivateSubnetAssociationA:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnetA
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnetAssociationC:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnetC
+      RouteTableId: !Ref PrivateRouteTable
+
+  # ----------------------------------------
+  # Security Groups
+  # ----------------------------------------
+
+  # EC2 Security Group
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP SSH and application access
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        # HTTP
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+        # SSH
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+        # Application
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress: #外に出すデータ ChatGPTでは丸ごと抜けていた
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: EC2-SG
+
+  # RDS Security Group
+  RDSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow MySQL from EC2 only
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref EC2SecurityGroup
+      SecurityGroupEgress: #外に出すデータ ChatGPTでは丸ごと抜けていた
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: RDS-SG
+
+  # ----------------------------------------
+  # Application Load Balancer
+  # ----------------------------------------
+  MyALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: My-ALB
+      Scheme: internet-facing
+      Type: application
+      Subnets:
+        - !Ref PublicSubnetA
+        - !Ref PublicSubnetC
+      SecurityGroups:
+        - !Ref EC2SecurityGroup #EC2と同じポリシーを使う
+      Tags:
+        - Key: Name
+          Value: MyALB
+
+  # ----------------------------------------
+  # EC2 Instance
+  # ----------------------------------------
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64}}'
+      InstanceType: t2.micro
+      SubnetId: !Ref PublicSubnetA
+      DisableApiTermination: false 　　　　　　#EC2インスタンスの終了保護を無効にする設定
+      InstanceInitiatedShutdownBehavior: stop #EC2内部からシャットダウン操作を行った際の動作：EC2を停止
+      KeyName: Raisetech_App1020 　　　　　　　#ChatGPTの回答不足部分
+      　　　　　　　　　　　　　　　　　　　　　　#★引っ掛かりポイント：キーペアは既存のものを★
+      Monitoring: false 　　　　　　　　　　　　#EC2インスタンスの詳細モニタリングを無効
+      SecurityGroupIds:
+        - !Ref EC2SecurityGroup
+      Tags:
+        - Key: Name
+          Value: WebServer-EC2
+
+  # ----------------------------------------
+  # Target Group
+  # ----------------------------------------
+  MyTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: My-Target-Group
+      Port: 80 
+      Protocol: HTTP
+      VpcId: !Ref MyVPC
+      HealthCheckProtocol: HTTP
+      HealthCheckPath: "/"
+      HealthCheckPort: "traffic-port" #ヘルスチェックを実行するポート番号を指定する設定
+      HealthCheckIntervalSeconds: 10 #ヘルスチェックを実行する間隔を秒単位で指定する
+      Matcher:
+        HttpCode: '200'
+      Targets:
+        - Id: !Ref EC2Instance
+          Port: 8080 
+      Tags:     #Tags ChatGPTの回答不足部分
+        - Key: Name
+          Value: ALB-Target-Group
+
+  # ----------------------------------------
+  # ALB Listener
+  # ----------------------------------------
+  MyALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref MyALB
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref MyTargetGroup
+  # ----------------------------------------
+  # RDS DB Subnet Group
+  # ----------------------------------------
+  MyDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Private subnets for RDS
+      SubnetIds:
+        - !Ref PrivateSubnetA
+        - !Ref PrivateSubnetC
+      Tags:
+        - Key: Name
+          Value: RDS-Subnet-Group
+
+  # ----------------------------------------
+  # RDS MySQL
+  # ----------------------------------------
+  MyRDS:
+    Type: AWS::RDS::DBInstance
+    #以２つChatGPTからの出力結果：不要な設定と考えコメントアウト
+    #DeletionPolicy: Retain　CloudFormationスタックを削除したときに、対象リソースを削除せず残す設定
+    #UpdateReplacePolicy: Retain CloudFormationの更新によってリソースが置き換えられる際、古いリソースを削除せず残す設定
+    Properties:
+      AllocatedStorage: '20'
+      AllowMajorVersionUpgrade: false #メジャーバージョンアップグレードを許可するかどうか
+      AutoMinorVersionUpgrade: true  #マイナーバージョンアップグレードを自動的に適用するかどうか
+      DBInstanceClass: db.t4g.micro 
+      Port: 3306
+      StorageType: gp2
+      BackupRetentionPeriod: 1
+      MasterUsername: admin
+      #以下、ChatGPTからの提案
+      #ManageMasterUserPassword: true⇒Secrets Managerによる自動管理を利用する方法がおすすめ。
+      #上記の場合、下記の「MasterUserPassword」は消すこと
+      MasterUserPassword: admin1101 #ChatGPTの回答不足部分
+      DBName: appdb
+      Engine: mysql
+      EngineVersion: 8.4.11 #無料枠で最新Verの自動適用方法はない
+      LicenseModel: general-public-license #ChatGPTの回答不足部分
+      DBSubnetGroupName: !Ref MyDBSubnetGroup
+      VPCSecurityGroups:
+        - !Ref RDSSecurityGroup
+        #以下コメントアウトは、ChatGPTからの提案
+        #- !GetAtt RDSSecurityGroup.GroupId
+        #🌟GetAttとは⇒!Ref RDSSecurityGroup と同じ結果であるが参照するのが属性である
+      #DBInstanceIdentifier: my-rds-database　RDSインスタンスを識別するための名前を指定
+      #PubliclyAccessible: false　RDSをインターネットから直接接続できる状態にするかを指定
+      #MultiAZ: false　Single AZ設定 RDSを複数のアベイラビリティーゾーン（AZ）にまたがって冗長化するかを指定
+      
+      DeletionProtection: true #RDSインスタンスの削除保護を有効にする設定
+      Tags:
+        - Key: Name
+          Value: MyRDS
+```
