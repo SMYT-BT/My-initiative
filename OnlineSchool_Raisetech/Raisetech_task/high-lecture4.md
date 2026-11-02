@@ -118,7 +118,7 @@ Description: AWS Web Application Infrastructure
 # ==========================================
 Resources:
   # ----------------------------------------
-  # VPC
+  # VPC（VPCの作成）
   # ----------------------------------------
   MyVPC:
     Type: AWS::EC2::VPC
@@ -130,7 +130,7 @@ Resources:
         - Key: Name
           Value: MyVPC
   # ----------------------------------------
-  # Internet Gateway
+  # Internet Gateway（IGWの作成）
   # ----------------------------------------
   MyInternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -145,7 +145,7 @@ Resources:
       VpcId: !Ref MyVPC
       InternetGatewayId: !Ref MyInternetGateway
   # ----------------------------------------
-  # Public Subnets
+  # Public Subnets（パブリックサブネットの作成）
   # ----------------------------------------
   PublicSubnetA:
     Type: AWS::EC2::Subnet
@@ -182,7 +182,7 @@ Resources:
           Value: PublicSubnet-C
 
   # ----------------------------------------
-  # Private Subnets
+  # Private Subnets（プライベートサブネットの作成）
   # ----------------------------------------
   PrivateSubnetA:
     Type: AWS::EC2::Subnet
@@ -211,7 +211,7 @@ Resources:
           Value: PrivateSubnet-C
 
   # ----------------------------------------
-  # Public Route Table
+  # Public Route Table（パブリックルートテーブルの作成）
   # ----------------------------------------
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -242,8 +242,8 @@ Resources:
       RouteTableId: !Ref PublicRouteTable
 
   # ----------------------------------------
-  # Private Route Table
-  # No NAT Gateway
+  # Private Route Table（プライベートルートテーブルの作成）
+  # No NAT Gateway（NGWは許可しない）
   # ----------------------------------------
   PrivateRouteTable:
     Type: AWS::EC2::RouteTable
@@ -266,7 +266,7 @@ Resources:
       RouteTableId: !Ref PrivateRouteTable
 
   # ----------------------------------------
-  # Security Groups
+  # Security Groups（セキュリティグループの作成）
   # ----------------------------------------
 
   # EC2 Security Group
@@ -319,7 +319,7 @@ Resources:
           Value: RDS-SG
 
   # ----------------------------------------
-  # EC2 Instance
+  # EC2 Instance（EC2の作成）
   # ----------------------------------------
   EC2Instance:
     Type: AWS::EC2::Instance
@@ -339,7 +339,7 @@ Resources:
           Value: WebServer-EC2
 
   # ----------------------------------------
-  # Target Group
+  # Target Group（ALBのターゲットグループの作成）
   # ----------------------------------------
   MyTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -361,7 +361,7 @@ Resources:
         - Key: Name
           Value: ALB-Target-Group
   # ----------------------------------------
-  # Application Load Balancer
+  # Application Load Balancer（ALBの作成）
   # ----------------------------------------
   MyALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -378,7 +378,7 @@ Resources:
         - Key: Name
           Value: MyALB
   # ----------------------------------------
-  # ALB Listener
+  # ALB Listener（ALBのリスナーを定義）
   # ----------------------------------------
   MyALBListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -390,7 +390,7 @@ Resources:
         - Type: forward
           TargetGroupArn: !Ref MyTargetGroup
   # ----------------------------------------
-  # RDS DB Subnet Group
+  # RDS DB Subnet Group（RDSのサブネットを作成）
   # ----------------------------------------
   MyDBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
@@ -404,7 +404,7 @@ Resources:
           Value: RDS-Subnet-Group
 
   # ----------------------------------------
-  # RDS MySQL
+  # RDS MySQL（RDSを作成）
   # ----------------------------------------
   MyRDS:
     Type: AWS::RDS::DBInstance
