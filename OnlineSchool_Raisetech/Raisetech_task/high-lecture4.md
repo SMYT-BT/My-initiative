@@ -126,12 +126,18 @@ Parameters:
     AllowedPattern: '^(?:[0-9]{1,3}\.){3}[0-9]{1,3}/32$'
     ConstraintDescription: IPv4アドレスを xxx.xxx.xxx.xxx/32 の形式で入力してください。
 
+  DBPassword:
+    Type: String
+    NoEcho: true
+    MinLength: 8
+    Description: RDS master password
+
 # ==========================================
 # Resources
 # ==========================================
 Resources:
   # ----------------------------------------
-  # VPC
+  # VPC(VPCの作成)
   # ----------------------------------------
   MyVPC:
     Type: AWS::EC2::VPC
@@ -144,7 +150,7 @@ Resources:
           Value: MyVPC
 
   # ----------------------------------------
-  # Internet Gateway
+  # Internet Gateway(IGWの作成)
   # ----------------------------------------
   MyInternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -160,7 +166,7 @@ Resources:
       InternetGatewayId: !Ref MyInternetGateway
 
   # ----------------------------------------
-  # Public Subnets
+  # Public Subnets(パブリックサブネットの作成)
   # ----------------------------------------
   PublicSubnetA:
     Type: AWS::EC2::Subnet
@@ -194,7 +200,7 @@ Resources:
           Value: PublicSubnet-C
 
   # ----------------------------------------
-  # Private Subnets
+  # Private Subnets(プライベートサブネットの作成)
   # ----------------------------------------
   PrivateSubnetA:
     Type: AWS::EC2::Subnet
@@ -223,7 +229,7 @@ Resources:
           Value: PrivateSubnet-C
 
   # ----------------------------------------
-  # Public Route Table
+  # Public Route Table(パブリックルートテーブルの作成)
   # ----------------------------------------
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -254,7 +260,7 @@ Resources:
       RouteTableId: !Ref PublicRouteTable
 
   # ----------------------------------------
-  # Private Route Table
+  # Private Route Table(プライベートルートテーブルの作成)
   # No NAT Gateway
   # ----------------------------------------
   PrivateRouteTable:
@@ -278,7 +284,7 @@ Resources:
       RouteTableId: !Ref PrivateRouteTable
 
   # ----------------------------------------
-  # Security Groups
+  # Security Groups(各セキュリティグループの作成)
   # ----------------------------------------
   #ALB Security Group
   ALBSecurityGroup:
@@ -289,7 +295,7 @@ Resources:
       SecurityGroupIngress:
         # HTTP
         - IpProtocol: tcp
-          FromPort: 8080
+          FromPort: 80
           ToPort: 8080
           CidrIp: 0.0.0.0/0
         # HTTPS
@@ -315,8 +321,8 @@ Resources:
       SecurityGroupIngress:
         # Application(ALBからのみ許可)
         - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
+          FromPort: 8080
+          ToPort: 8080
           SourceSecurityGroupId: !Ref ALBSecurityGroup
 
         # SSH(メンテナンス用:自身のIP)
@@ -352,7 +358,7 @@ Resources:
           Value: RDS-SG
 
   # ----------------------------------------
-  # Application Load Balancer
+  # Application Load Balancer(ALBの作成)
   # ----------------------------------------
   MyALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -370,7 +376,7 @@ Resources:
           Value: MyALB
 
   # ----------------------------------------
-  # EC2 Instance
+  # EC2 Instance(EC2の作成)
   # ----------------------------------------
   EC2Instance:
     Type: AWS::EC2::Instance
@@ -391,7 +397,7 @@ Resources:
           Value: WebServer-EC2
 
   # ----------------------------------------
-  # Target Group
+  # Target Group(ALBのターゲットグループ作成)
   # ----------------------------------------
   MyTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -415,7 +421,7 @@ Resources:
           Value: ALB-Target-Group
 
   # ----------------------------------------
-  # ALB Listener
+  # ALB Listener(ALBのリスナー定義)
   # ----------------------------------------
   MyALBListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -428,7 +434,7 @@ Resources:
           TargetGroupArn: !Ref MyTargetGroup
 
   # ----------------------------------------
-  # RDS DB Subnet Group
+  # RDS DB Subnet Group(RDSのサブネット作成)
   # ----------------------------------------
   MyDBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
@@ -442,7 +448,7 @@ Resources:
           Value: RDS-Subnet-Group
 
   # ----------------------------------------
-  # RDS MySQL
+  # RDS MySQL(RDB作成)
   # ----------------------------------------
   MyRDS:
     Type: AWS::RDS::DBInstance
@@ -459,7 +465,9 @@ Resources:
       MasterUsername: admin
       #ManageMasterUserPassword: true⇒Secrets Managerによる自動管理を利用する方法がおすすめ。
       #上記の場合、下記の「MasterUserPassword」は消すこと
-      ManageMasterUserPassword: true
+      
+      MasterUserPassword: !Ref DBPassword
+
       DBName: appdb
       Engine: mysql
       EngineVersion: 8.4.11 #無料枠で最新Verの自動適用方法はない
