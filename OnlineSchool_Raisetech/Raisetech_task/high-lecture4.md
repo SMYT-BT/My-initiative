@@ -29,7 +29,7 @@ AWSサービスにて、以下条件のインフラ構造が構築したいで�
 今作成いただいた画像通りの内容をAWSサービス CloudFormation で構築できるように、YAML形式のコード文を記載してください。
 ```
 ### 3.コード文を検閲・添削・修正
-※修正箇所は「ChatGPT 出力結果修正箇所」にて記載
+※修正箇所は「[ChatGPT 出力結果修正箇所](https://github.com/SMYT-BT/My-initiative/blob/main/OnlineSchool_Raisetech/Raisetech_task/high-lecture4.md#chatgpt-%E5%87%BA%E5%8A%9B%E7%B5%90%E6%9E%9C%E4%BF%AE%E6%AD%A3%E7%AE%87%E6%89%80)」にて記載
 ### 4.トライ＆エラー
 【1回目】インスタンスの作成まで（ELBとRDSの作成を省く）
 
@@ -51,7 +51,7 @@ Resource handler returned message: "Cannot find version 8.0.41 for mysql (Servic
 ⇒最新のバージョンを指定して作成成功
 <img width="941" height="382" alt="image" src="https://github.com/user-attachments/assets/a61406b3-4b31-4dc5-9de0-1d5fdb696794" />
 ### 5.CloudFormation実演講座にて、答え合わせ。一部手を加える。
-※加筆箇所は「講義視聴後の加筆箇所」にて記載
+※加筆箇所は「[講義視聴後の加筆箇所](https://github.com/SMYT-BT/My-initiative/blob/main/OnlineSchool_Raisetech/Raisetech_task/high-lecture4.md#%E8%AC%9B%E7%BE%A9%E8%A6%96%E8%81%B4%E5%BE%8C%E3%81%AE%E5%8A%A0%E7%AD%86%E7%AE%87%E6%89%80)」にて記載
 
 ## ChatGPT 出力結果修正箇所
 ### 〇各セキュリティグループ
