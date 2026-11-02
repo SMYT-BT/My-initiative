@@ -50,12 +50,12 @@ AWSサービスにて、以下条件のインフラ構造が構築したいで�
 ※加筆箇所は「講義視聴後の加筆箇所」にて記載
 
 ## ChatGPT 出力結果修正箇所
-### 各セキュリティグループ
+### 〇各セキュリティグループ
 ```
 ・SecurityGroupEgressが抜けていた
 ・ALBのセキュリティグループを削除
 ```
-### サブネット
+### 〇サブネット
 ```
 AZを指定：ap-northeast-1* など
 ※以下変更前の記載
@@ -63,7 +63,7 @@ AvailabilityZone: !Select
       - 1
       - !GetAZs ''
 ```
-### EC2
+### 〇EC2
 以下内容を追記。
 ```
 ・DisableApiTermination: false
@@ -71,7 +71,7 @@ AvailabilityZone: !Select
 ・KeyName: Raisetech_App1020
 ・Monitoring: false
 ```
-### ALB(ターゲットグループ)
+### 〇ALB(ターゲットグループ)
 以下内容を追記。
 ```
 ・HealthCheckPort: "traffic-port"
@@ -81,7 +81,7 @@ AvailabilityZone: !Select
         - Key: Name
           Value: ALB-Target-Group
 ```
-### RDS
+### 〇RDS
 以下内容を追記。
 ```
 ・AllowMajorVersionUpgrade: false
@@ -94,7 +94,7 @@ AvailabilityZone: !Select
 ・LicenseModel: general-public-license
 ```
 ## 講義視聴後の加筆箇所
-### RDS
+### 〇RDS
 ```
 ・AllowMajorVersionUpgrade: false
 ・AutoMinorVersionUpgrade: true
