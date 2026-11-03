@@ -132,6 +132,12 @@ Parameters:
     MinLength: 8
     Description: RDS master password
 
+  DBEngineVersion:
+    Type: String
+    Description: RDS MySQL engine version
+    AllowedPattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+    ConstraintDescription: バージョンを x.x.x の形式で指定してください。
+
 # ==========================================
 # Resources
 # ==========================================
@@ -296,7 +302,7 @@ Resources:
         # HTTP
         - IpProtocol: tcp
           FromPort: 80
-          ToPort: 8080
+          ToPort: 80
           CidrIp: 0.0.0.0/0
         # HTTPS
         #- IpProtocol: tcp
@@ -470,7 +476,7 @@ Resources:
 
       DBName: appdb
       Engine: mysql
-      EngineVersion: 8.4.11 #無料枠で最新Verの自動適用方法はない
+      EngineVersion: !Ref DBEngineVersion
       LicenseModel: general-public-license #ChatGPTの回答不足部分
       DBSubnetGroupName: !Ref MyDBSubnetGroup
       PubliclyAccessible: false #RDSをインターネットから直接接続できる状態にするかを指定
