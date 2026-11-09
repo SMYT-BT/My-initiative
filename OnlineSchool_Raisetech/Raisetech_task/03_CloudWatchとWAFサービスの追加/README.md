@@ -16,6 +16,7 @@ AWSサービスにて、提案いただいたインフラ構造が構築した�
 ```
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/2c7204aa-8251-47bd-b6bc-f519585d0545" />
 
+- S3 は別課題の影響のため、記載が入ってしまったリソース。
 
 # 3つの心配事
 
