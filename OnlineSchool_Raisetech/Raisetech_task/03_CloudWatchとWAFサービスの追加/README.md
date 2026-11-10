@@ -56,9 +56,7 @@ WAF が PutLogEvents できるよう、AWS::Logs::ResourcePolicy を追加する
 
 ②メトリクス/ARN の参照の確認をお願いします。
 
-・MyWebACLAssociation の ResourceArn に !Ref MyALB を使っていますが、環境や CFN バージョンによっては明示的に LoadBalancer の ARN 
-
-を使う必要がある場合があります（デプロイ時にエラーが出ないか確認してください）。
+・MyWebACLAssociation の ResourceArn に !Ref MyALB を使っていますが、環境や CFN バージョンによっては明示的に LoadBalancer の ARN を使う必要がある場合があります（デプロイ時にエラーが出ないか確認してください）。
 
 ⇒Cloudformation で問題なく構築できることを確認。
 
