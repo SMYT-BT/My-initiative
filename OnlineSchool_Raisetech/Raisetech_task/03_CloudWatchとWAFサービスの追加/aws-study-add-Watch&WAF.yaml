@@ -4,6 +4,7 @@ Description: AWS Web Application Infrastructure
 # Parameters
 # ==========================================
 #ホストユーザのIPアドレス生成
+
 Parameters:
   MyIPAddress:
     Type: String
