@@ -14,7 +14,7 @@
 ```
 AWSサービスにて、提案いただいたインフラ構造が構築したいです。AWSサービスのサービスアイコンを用いて、インフラ構成図を作成してみてください。
 ```
-<img width="1535" height="1024" alt="image" src="https://github.com/user-attachments/assets/5211dcf1-7b38-4107-9400-c8809469d7fd" />
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/fe3a7846-ab18-45e5-ad3c-ff9c6d28e646" />
 
 # 3つの心配事
 
