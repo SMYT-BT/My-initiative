@@ -56,17 +56,12 @@ WAF が PutLogEvents できるよう、AWS::Logs::ResourcePolicy を追加する
 
 ②メトリクス/ARN の参照の確認をお願いします。
 
-・WAF のアラームの Dimensions（WebACL の Value）が WebACL の VisibilityConfig の MetricName と対応しているか再確認してください
-
-（MyWebACLMetric を使う意図は理解できますが、実際の CloudWatch に出る識別名と一致することをデプロイで確認してください）。
-
 ・MyWebACLAssociation の ResourceArn に !Ref MyALB を使っていますが、環境や CFN バージョンによっては明示的に LoadBalancer の ARN 
 
 を使う必要がある場合があります（デプロイ時にエラーが出ないか確認してください）。
-```
 
+⇒Cloudformation で問題なく構築できることを確認。
 
-```
 # 講座を終えて：3つの心配事
 
 ① 現在、ChatGPT を利用しているが、他現場では企業用の Copilot が使用されると思われる。
