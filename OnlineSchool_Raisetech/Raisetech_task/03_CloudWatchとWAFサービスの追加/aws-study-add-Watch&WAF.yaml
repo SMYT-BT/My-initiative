@@ -15,7 +15,10 @@ Parameters:
     Type: String
     NoEcho: true
     MinLength: 8
-    Description: RDS master password
+    MaxLength: 41
+    #Description: RDS MySQL master password (8-41 characters)
+    AllowedPattern: '^[a-zA-Z0-9]+$'
+    ConstraintDescription: 'パスワードは半角英数字で8～41文字にしてください。'
 
   DBEngineVersion:
     Type: String
@@ -23,9 +26,9 @@ Parameters:
     AllowedPattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
     ConstraintDescription: バージョンを x.x.x の形式で指定してください。
 
-  ALBCertificateArn: #ACM証明書のARNを受け取る（新規追加★★★
-    Type: String
-    Description: ALBに設定するACM証明書のARN
+  #ALBCertificateArn: #ACM証明書のARNを受け取る（新規追加★★★
+  #  Type: String
+  #  Description: ALBに設定するACM証明書のARN
   
   AlertEmail: #アラーム通知先のメールアドレス設定
     Type: String
@@ -193,16 +196,16 @@ Resources:
       VpcId: !Ref MyVPC
       SecurityGroupIngress:
         # HTTP
-        #- IpProtocol: tcp
-        #  FromPort: 80
-        #  ToPort: 80  
-        #  CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80  
+          CidrIp: 0.0.0.0/0
 
         # HTTPS              #新規追加★★★
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          CidrIp: 0.0.0.0/0
+        #- IpProtocol: tcp
+        #  FromPort: 443
+        #  ToPort: 443
+        #  CidrIp: 0.0.0.0/0
 
       # EC2へのアプリケーション通信
       SecurityGroupEgress: #外に出すデータ
@@ -327,11 +330,11 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       LoadBalancerArn: !Ref MyALB
-      Port: 443
-      Protocol: HTTPS
-      Certificates: #新規追加★★★
-        - CertificateArn: !Ref ALBCertificateArn #証明書を参照：新規追加★★★
-      SslPolicy: ELBSecurityPolicy-TLS13-1-2-2021-06 #AWS提供のセキュリティポリシー：新規追加★★★
+      Port: 80
+      Protocol: HTTP
+      #Certificates: #新規追加★★★
+      #  - CertificateArn: !Ref ALBCertificateArn #証明書を参照：新規追加★★★
+      #SslPolicy: ELBSecurityPolicy-TLS13-1-2-2021-06 #AWS提供のセキュリティポリシー：新規追加★★★
       DefaultActions:
         - Type: forward
           TargetGroupArn: !Ref MyTargetGroup
@@ -391,7 +394,7 @@ Resources:
           Value: MyRDS
 
   # ----------------------------------------
-  # WAF:Web ACL(RDB作成)
+  # WAF:Web ACL
   # ----------------------------------------
   MyWebACL:
     Type: AWS::WAFv2::WebACL
@@ -403,12 +406,13 @@ Resources:
         Allow: {}
 
       VisibilityConfig:
+      #WAFにおいて、ウェブACL（WebACL）やルールグループなどのモニタリング（監視）・ロギング・メトリック収集の設定を定義するための設定
         SampledRequestsEnabled: false #サンプルリクエストの保存を無効。ログに個人情報や認証情報が含まれるリスク削減。
         CloudWatchMetricsEnabled: true
-        MetricName: MyWebACLMetric
+        MetricName: MyWebACLMetric   #CloudWatchがどのWebACLから送られたメトリクスなのかを識別するための名前
 
       Rules:
-        - Name: AWSManagedRulesCommonRuleSet
+        - Name: AWSManagedRulesCommonRuleSet #CommonRuleSetのメトリクス
           Priority: 0
           OverrideAction:
             None: {}
@@ -421,7 +425,7 @@ Resources:
             CloudWatchMetricsEnabled: true
             MetricName: CommonRuleSetMetric
 
-        - Name: AWSManagedRulesSQLiRuleSet
+        - Name: AWSManagedRulesSQLiRuleSet #SQLiルールのメトリクス
           Priority: 1
           OverrideAction:
             Count: {}    #Count が None の場合、AWS のマネージドルールが採用され誤検知される可能性がある
@@ -434,7 +438,7 @@ Resources:
             CloudWatchMetricsEnabled: true
             MetricName: SQLiRuleSetMetric
 
-        - Name: AWSManagedRulesKnownBadInputsRuleSet
+        - Name: AWSManagedRulesKnownBadInputsRuleSet #KnownBadInputsのメトリクス
           Priority: 2
           OverrideAction:
             None: {}
@@ -461,15 +465,39 @@ Resources:
   # ----------------------------------------
   MyWAFLoggingConfiguration:
     Type: AWS::WAFv2::LoggingConfiguration
+    DependsOn:      #CloudFormationでリソースの作成順序を指定するプロパティ
+        - WAFLogResourcePolicy #ポリシーの反映(論理ID指定)
     Properties:
       ResourceArn: !GetAtt MyWebACL.Arn
       LogDestinationConfigs:
         - !GetAtt WAFLogGroup.Arn
-
       RedactedFields: #認証情報などの機密情報がログに残るリスクを減らすための設定
         - SingleHeader:
             Name: authorization
         - QueryString: {}
+
+  # ----------------------------------------
+  # WAF → CloudWatch Logs 書き込み権限
+  # ----------------------------------------
+  WAFLogResourcePolicy:
+    Type: AWS::Logs::ResourcePolicy
+    Properties:
+      PolicyName: WAF-CloudWatchLogs-ResourcePolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: delivery.logs.amazonaws.com
+            Action:
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: !Sub "${WAFLogGroup.Arn}:*"
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
+              ArnLike:
+                aws:SourceArn: !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:*"
 
   # ----------------------------------------
   # WAFログをCloudWatch Logsに送信
@@ -494,7 +522,9 @@ Resources:
 
       Dimensions:
         - Name: WebACL
-          Value: MyWebACLMetric #CloudWatchメトリクスの識別名を指定
+          Value: MyWebACLMetric #CloudWatchメトリクスの識別名を指定(監視対象を指定)
+        - Name: Rule
+          Value: ALL
         - Name: Region
           Value: !Ref AWS::Region
 
