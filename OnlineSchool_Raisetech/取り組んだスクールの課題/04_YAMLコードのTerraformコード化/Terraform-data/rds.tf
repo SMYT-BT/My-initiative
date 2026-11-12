@@ -1,25 +1,37 @@
-output "vpc_id" {
-  description = "作成したVPC ID"
-  value       = aws_vpc.main.id
+# -------------------------------------------------------------------
+# RDS サブネットグループ
+# -------------------------------------------------------------------
+resource "aws_db_subnet_group" "main" {
+  name        = "rds-subnet-group"
+  description = "Private subnets for RDS"
+  subnet_ids  = [aws_subnet.private_a.id, aws_subnet.private_c.id]
+  tags        = { Name = "RDS-Subnet-Group" }
 }
 
-output "alb_dns_name" {
-  description = "ALBのDNS名"
-  value       = aws_lb.main.dns_name
-}
+# -------------------------------------------------------------------
+# RDS MySQL
+# -------------------------------------------------------------------
+resource "aws_db_instance" "main" {
+  allocated_storage           = 20
+  allow_major_version_upgrade = false
+  auto_minor_version_upgrade  = true
+  instance_class              = "db.t4g.micro"
+  port                        = 3306
+  storage_type                = "gp2"
+  backup_retention_period     = 1
+  username                    = "admin"
+  password                    = var.db_password
+  db_name                     = "appdb"
+  engine                      = "mysql"
+  engine_version              = var.db_engine_version
+  license_model               = "general-public-license"
+  db_subnet_group_name        = aws_db_subnet_group.main.name
+  publicly_accessible         = false
+  storage_encrypted           = true
+  multi_az                    = false
+  vpc_security_group_ids      = [aws_security_group.rds.id]
+  deletion_protection         = true
+  skip_final_snapshot         = true
 
-output "ec2_instance_id" {
-  description = "EC2インスタンスID"
-  value       = aws_instance.web.id
+  tags = { Name = "MyRDS" }
 }
-
-output "rds_endpoint" {
-  description = "RDS接続エンドポイント"
-  value       = aws_db_instance.main.endpoint
-}
-
-output "waf_web_acl_arn" {
-  description = "WAF Web ACL ARN"
-  value       = aws_wafv2_web_acl.main.arn
-}
-
