@@ -76,3 +76,10 @@ Planning failed. Terraform encountered an error while generating this plan.
 
 上記で、AWS CLI をインストールし再度 terraform plan を実行。以下成功！
 <img width="686" height="184" alt="image" src="https://github.com/user-attachments/assets/d15ad2e0-d175-4df1-aa65-cab953675c42" />
+
+⑤ AWSへのリソース作成
+```
+terraform apply
+```
+以下画像のように Apply というメッセージ反応があればビルド成功！
+<img width="683" height="154" alt="image" src="https://github.com/user-attachments/assets/44c3c096-d548-4d48-8e43-5579b152fa9b" />
