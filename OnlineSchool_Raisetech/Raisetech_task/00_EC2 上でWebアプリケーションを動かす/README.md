@@ -53,32 +53,32 @@ My SQLを選択。
 
 ### ③ EC2インスタンスの環境を整備
 
-EC2に接続した状態で、以下コマンドを実行。EC2内の既存AWSサービスの更新。
+〇 EC2に接続した状態で、以下コマンドを実行。EC2内の既存AWSサービスの更新。
 ```
 sudo dnf update
 ```
-mysql コマンドを使えるように、My SQLをインストールする。
+〇 mysql コマンドを使えるように、My SQLをインストールする。
 [参考サイト](https://dev.classmethod.jp/articles/Install-mysql-on-al2023-and-login/)
 ```
 sudo dnf -y install https://dev.mysql.com/get/mysql84-community-release-el9-1.noarch.rpm
 ```
-mysql のクライアントをインストール。
+〇 mysql のクライアントをインストール。
 ```
 sudo dnf -y install mysql mysql-community-client
 ```
-JAVA をインスタンスにインストールする。そのため、インストールできるものを一覧で確認。
+〇 JAVA をインスタンスにインストールする。そのため、インストールできるものを一覧で確認。
 ```
 sudo dnf list --available "java-*corretto*"
 ```
-以下にて、Javaをインストールする。(Ver.21)
+〇 以下にて、Javaをインストールする。(Ver.21)
 ```
 sudo dnf install java-21-amazon-corretto-devel.x86_64
 ```
-（バージョン管理システムとして）gitをインストール
+〇 （バージョン管理システムとして）gitをインストール
 ```
 sudo dnf install git
 ```
-スクールの授業用に用意されたプロジェクトを（リモートで）インストールする。
+〇 スクールの授業用に用意されたプロジェクトを（リモートで）インストールする。
 ```
 git clone https://github.com/～（省略）
 ```
