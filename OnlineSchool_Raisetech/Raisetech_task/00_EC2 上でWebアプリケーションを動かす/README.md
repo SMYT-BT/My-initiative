@@ -1,7 +1,6 @@
 # 実装内容（課題内容）
 
 簡易Webアプリケーションの起動・稼働確認。
-
 Webアプリケーションを作成して自身の名前をＷｅｂ上に表示させることで、Webアプリケーションの仕組みを理解する。
 ```
 以下課題環境を準備したうえで、以降の対応を実施。
@@ -9,11 +8,11 @@ Webアプリケーションを作成して自身の名前をＷｅｂ上に表�
 ② [SpringBoot](https://start.spring.io/) にて、デモンストレーション用のWebアプリケーションデータを作成
 ③ 上記「②」で作成したデータを VC-CODE の新規プロジェクトに読み込ませる
 ```
-
+# 動作確認（対応事項）
 
 ### ① 作成したインスタンスに接続確認
 
-以下コマンドを実行すると、下記のように接続ができる。
+以下 ssh コマンドを実行すると、下記のように接続ができる。
 ```
 ssh -i C:\Users\****\Documents\Raisetech\Raisetech_App1020.pem ec2-user@***.***.***.***
 
@@ -34,6 +33,8 @@ Warning: Permanently added '13.231.146.97' (ED25519) to the list of known hosts.
        _/m/'
 [ec2-user@ip-10-0-14-185 ~]$
 ```
+-----------------------
+
 ### ② RDS作成（注意すべき項目を抜粋）
 
 My SQLを選択。
@@ -42,10 +43,13 @@ My SQLを選択。
 無料枠で作成するため、Single AZ になる。
 <img width="905" height="380" alt="image" src="https://github.com/user-attachments/assets/7ab6ecce-56e9-425f-b429-5b38c91e2fec" />
 
-メモ：マスターユーザーは admin としておく。PASSは adminadmin
 
 作成したインスタンスと連携させる。
 <img width="909" height="223" alt="image" src="https://github.com/user-attachments/assets/e7cf9e84-68a7-455b-8cd0-f2a8b7279d6c" />
+
+ ⇒ **今回、「awsstudy」というデータベース名で作成した。**
+
+-----------------------
 
 ### ③ EC2インスタンスの環境を整備
 
@@ -62,6 +66,22 @@ mysql のクライアントをインストール。
 ```
 sudo dnf -y install mysql mysql-community-client
 ```
+JAVA をインスタンスにインストールする。そのため、インストールできるものを一覧で確認。
+```
+sudo dnf list --available "java-*corretto*"
+```
+以下にて、Javaをインストールする。(Ver.21)
+```
+sudo dnf install java-21-amazon-corretto-devel.x86_64
+```
+（バージョン管理システムとして）gitをインストール
+```
+sudo dnf install git
+```
+スクールの授業用に用意されたプロジェクトを（リモートで）インストールする。
+```
+git clone https://github.com/～（省略）
+```
 
 該当の RDS の詳細画面から以下画像のとおり、選択範囲のコマンドをEC2インスタンス上で実行。
 
@@ -73,58 +93,67 @@ mysql -h aws-study-database-1.cpg04ysmcz79.ap-northeast-1.rds.amazonaws.com -P 3
 ```
 <img width="854" height="225" alt="image" src="https://github.com/user-attachments/assets/8335df23-8f29-4ed5-a3d4-9f0a6c92ef94" />
 
+-----------------------
 
-立ち上げた springboot は下記のように port 8080 の接続になる。
+ ### ④ Webアプリケーションの起動確認
+Webアプリケーションの実行に伴い、権限上の問題があるため以下コマンドのように権限変更した後に、Webアプリケーションを起動。
+以下画像のようにWebアプリケーションが立ち上がる。
 ```
-2026-11-12T08:10:46.819Z  INFO 29086 --- [demo] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+chmod 755 gradlew
+./gradlew bootRun　　　※初回はダウンロードから始まる
 ```
+<img width="942" height="453" alt="スクリーンショット 2026-11-12 1713065676890-" src="https://github.com/user-attachments/assets/d467bd06-46cf-4b55-9d90-637f4c3aefb9" />
+ 
+上記赤線のように、立ち上げた springboot は port 8080 の接続でないとアクセスできない。
+ 
+ ⇒ EC2インスタンスのセキュリティグループのインバウンドルールに 8080 用のルールを作る必要がある。
 
-そのため、EC2インスタンスのセキュリティグループにて、8080 用のルールを以下のように作る必要がある。
-<img width="895" height="51" alt="image" src="https://github.com/user-attachments/assets/7a0f1330-a8d2-4af1-9814-dd5131f02a8f" />
+更新すると、URL「13.231.146.97:8080」を検索すると、「このサイトにアクセスできません」が、以下のようなページに遷移。
+※「//13.231.146.97:8080/」みたいに、末尾に :8080 をつける。
 
-URL「13.231.146.97:8080」を検索すると、以下のようなページに遷移。
 <img width="959" height="188" alt="image" src="https://github.com/user-attachments/assets/1266a28f-735a-40a0-97d7-6240d4b2386b" />
 
+-----------------------
 
+### ⑤ Webアプリケーションを正常に稼働させる
 
-以下、AWSインスタンスにインストール（および取得）
+・Webアプリケーションのプロパティにて、データの参照先（database.url）を間違えているため下記のようにDBを指定してあげる。
 
-・my sql クライアント
+・また、プロパティに記載されているユーザデータが異なった情報であったため、更新。
+```
+spring.datasource.url=jdbc:mysql://aws-study-database-1.cpg04ysmcz79.ap-northeast-1.rds.amazonaws.com:3306/awsstudy
+spring.datasource.username=admin
+spring.datasource.password=************
+```
+以下コマンドで、データベースを切り替えスクール側指定のテーブルを作成する。
 
-・MySQL クライアント関連のパッケージ
+※VALUES ('Your Name')　には受講者の名前を入れる。
+```
+use awsstudy
+```
+```
+CREATE TABLE IF NOT EXISTS student (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL
+);
 
-・Java(Ver.21)
+INSERT INTO student (name) VALUES ('Your Name');
+```
 
-・git
+-----------------------
 
-・課題用プロジェクト（git clone で取得）
+### ⑥ 作業結果
 
-# 動作確認（対応事項）
+・CLI 上から、再度Webアプリケーションを起動
+・インスタンスのIPの末尾にポート番号をつけてアクセス
 
-①chmod 755 gradlew
-
-⇒Webアプリケーション起動のために権限変更
-
-②cd src/main/resources
-
-⇒Webアプリケーションに表示する内容やプロパティのユーザデータを更新
-
-**※パスワードを更新していなかったため、エラーに衝突**
-
-③「②」の「create.sql」に記載されているテーブル情報を MySQL 上で実施
-
-（データベースにテーブルを新規追加する）
-
-④use study; , select * from student;
-
-⇒「③」で追加した情報が更新されているか確認する。
-
-⑤./gradlew bootRun（WebAPPの実行）
-
-⑥自身の名前がWebアプリケーションの処理結果として、Ｗｅｂ上に表示されることを確認。
-
+⇒問題なく自身の名前が表示されることを確認。
 ※別ファイル「Webアプリケーション実行結果画像.png」を参照
 
+-----------------------
+
 # 工夫した点・学んだこと
+
+・ユーザーデータや、そのシステムのプロパティのパラメータ値を理解しておくと初動の切り分けが少し楽になると感じた。
 
 ・シンプルな考えではあるが、事象の切り分け方としてシステム構成側の問題か、ユーザデータ側の問題か、切り分けることができると感じた。つまり、プロジェクトを遂行する際、この両面の要件が正確に設定されているか確実に確認するためのチェックシートなどがあると、対応漏れや・設定の見直し・新人への理解促進につながると感じた。
