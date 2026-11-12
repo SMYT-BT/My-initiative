@@ -1,0 +1,12 @@
+# 以下拡張子のファイルを除く
+
+# Terraform variable files
+*.tfvars
+*.tfvars.json
+
+# Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Terraform working directory
+.terraform/
