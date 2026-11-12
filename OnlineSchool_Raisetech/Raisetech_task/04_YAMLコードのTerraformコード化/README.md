@@ -1,11 +1,9 @@
-## 実装内容
+## 実装内容（課題内容）
+CloudFormation と同様に、Terraformでもクラウド環境を構築できるように、環境構築のコード化を実現すること。
+※背景：CloudFormation または Terraform どちらも実現場で使われるツールであるため、双方対応できるようにすること。
 - VC-CODE に Terraform を登録 ⇒ [Zenn](https://zenn.dev/aws_cloudmemo/articles/88cf4f869ecbcc#terraform-%E3%81%AE%E6%BA%96%E5%82%99%E6%89%8B%E9%A0%86%EF%BC%88vc-code-%E7%B7%A8%EF%BC%89) にて記載しました。
-
-- ユーザー登録機能を実装しました
-- バリデーション処理を追加しました
-- エラーメッセージの表示機能を実装しました
-- 
-## 動作確認
+  
+## 動作確認（対応事項）
 ### 1. 前回作成した CloudFormation の YAML ファイルをもとに、以下 ChatGPT に依頼する。
 ```
 添付のYAMLファイルをTerraform用のコード文に変換してください。
