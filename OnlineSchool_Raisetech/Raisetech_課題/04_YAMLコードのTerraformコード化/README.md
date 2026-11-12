@@ -17,6 +17,13 @@ CloudFormation と同様に、Terraformでもクラウド環境を構築でき�
 ### 2. 出力結果を全文検閲・理解
 検閲したこと、理解したこと、調べたことを Zennブログにまとめる ⇒ [マイブログ](https://zenn.dev/aws_cloudmemo/articles/88cf4f869ecbcc#terraform-%E3%81%AE%E6%BA%96%E5%82%99%E6%89%8B%E9%A0%86%EF%BC%88vc-code-%E7%B7%A8%EF%BC%89)
 
+##### 【★課題合格後の修正事項★】
+以下、「DBパスワードの管理に脆弱性アリ」とごしてきをいただき、以下変更を実施しました。
+- terraform.tfvarsをterraform.tfvars.exampleに変更。その際、DBパスワードに関する記載を削除。
+- .gitignore ファイルを作成し、取り除く拡張子を定義。
+
+
+
 -------------------------
 
 ### 3. Terraform にてコードの試験開始
