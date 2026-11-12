@@ -1,79 +1,66 @@
-# Terraform CLIをインストールする（Windows）
+## 実装内容
+- VC-CODE に Terraform を登録 ⇒ [Zenn](https://zenn.dev/aws_cloudmemo/articles/88cf4f869ecbcc#terraform-%E3%81%AE%E6%BA%96%E5%82%99%E6%89%8B%E9%A0%86%EF%BC%88vc-code-%E7%B7%A8%EF%BC%89) にて記載しました。
 
-### ① Terraform公式サイトにアクセス＆インストール
-https://developer.hashicorp.com/terraform/install?utm_source=chatgpt.com
-
-### ② Windows用のファイルをダウンロード
-
-一般的なIntel・AMD製CPUのWindows PCなら、以下を選択します。
-- OS：Windows
-- Architecture：AMD64
-- ファイル形式：ZIP
-※ ARM版Windows PCの場合はARM64を選択してください。
-
-### ③ ZIPファイルを展開する
-
-以下のフォルダを作成。
+- ユーザー登録機能を実装しました
+- バリデーション処理を追加しました
+- エラーメッセージの表示機能を実装しました
+## 動作確認
+### 1. 前回作成した CloudFormation の YAML ファイルをもとに、以下 ChatGPT に依頼する。
 ```
-C:\terraform
+添付のYAMLファイルをTerraform用のコード文に変換してください。
 ```
-展開したZIPの中にある terraform.exe を、このフォルダに配置します。
+**【出力結果】**
+<img width="392" height="146" alt="image" src="https://github.com/user-attachments/assets/270795a6-8c95-4a2f-9020-03e6c78998ec" />
 
-### ④ 環境変数PATHを設定する
+### 2. 出力結果を全文検閲・理解
+検閲したこと、理解したこと、調べたことを Zennブログにまとめる ⇒ [マイナレッジ](https://zenn.dev/aws_cloudmemo/articles/88cf4f869ecbcc#terraform-%E3%81%AE%E6%BA%96%E5%82%99%E6%89%8B%E9%A0%86%EF%BC%88vc-code-%E7%B7%A8%EF%BC%89)
 
-Terraformをどのフォルダからでも実行できるようにします。
+### 3. Terraform にてコードの試験開始
 
-1. Windowsの検索欄で「環境変数」と検索
-
-2. 「システム環境変数の編集」を開く
-
-3. 「環境変数」をクリック
-
-4. ユーザー環境変数またはシステム環境変数の Path を選択
-
-5. 「編集」→「新規」
-
-6. 以下を追加
+① コードのフォーマット
 ```
-C:\terraform
+PS C:\terraform\terraform-project\terraform-aws-CloudWatch-WAF> terraform fmt -recursive
 ```
-7. OKを押して設定を保存
-
-### ⑤ インストール確認
-
-新しくPowerShellを起動して、以下を実行します。
-
-terraform -version
-
-正常にインストールされていれば、Terraformのバージョンが表示されます。
-
-terraform -version が正常に動けばCLIの導入は完了です。
-
-# VS CodeにTerraform拡張機能を導入する
-
-1. VS Codeを起動
-
-2. 左側の拡張機能アイコンをクリック
-
-3. 検索欄に以下を入力
+② プロバイダー・モジュールの初期化
 ```
-HashiCorp Terraform
-```
-4. 発行元がHashiCorpの拡張機能を選択
+PS C:\terraform\terraform-project\terraform-aws-CloudWatch-WAF> terraform init
+Initializing the backend...
 
-5.「インストール」をクリック
+Initializing provider plugins...
+- Finding hashicorp/aws versions matching "~> 6.0"...
+- Installing hashicorp/aws v6.73.0...
+- Installed hashicorp/aws v6.73.0 (signed by HashiCorp)
 
-# Terraformの基本的な動作確認
+Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
 
-①ターミナルをひらく
+Terraform has been successfully initialized!
+```
+③ 構文・設定の検証
+```
+PS C:\terraform\terraform-project\terraform-aws-CloudWatch-WAF> terraform validate
+Success! The configuration is valid.
+```
+④ AWSへの作成・変更予定の確認（エラー対応）
+```
+PS C:\terraform\terraform-project\terraform-aws-CloudWatch-WAF> terraform plan
 
-表示（V）→ターミナル
+Planning failed. Terraform encountered an error while generating this plan.
+
+╷
+│ Error: No valid credential sources found
+│ 
+│   with provider["registry.terraform.io/hashicorp/aws"],
+│   on main.tf line 12, in provider "aws":
+│   12: provider "aws" {
+│ 
+│ Please see https://registry.terraform.io/providers/hashicorp/aws
+│ for more information about providing credentials.
+│ 
+│ Error: failed to refresh cached credentials, no EC2 IMDS role found, operation error ec2imds: GetMetadata, request
+│ canceled, context deadline exceeded
 ```
-terraform init
-```
-```
-terraform validate
-```
-```
-terraform plan
-```
+⇒ Terraformの初期化・フォーマット・構文検証はすべて正常に完了しているが、AWSの認証情報が設定されていない。
+
