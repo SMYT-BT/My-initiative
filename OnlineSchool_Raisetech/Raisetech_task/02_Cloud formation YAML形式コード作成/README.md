@@ -51,7 +51,7 @@ Resource handler returned message: "Cannot find version 8.0.41 for mysql (Servic
 ⇒最新のバージョンを指定して作成成功
 <img width="941" height="382" alt="image" src="https://github.com/user-attachments/assets/a61406b3-4b31-4dc5-9de0-1d5fdb696794" />
 ### 5.CloudFormation実演講座にて、答え合わせ。一部手を加える。
-※加筆箇所は「[講義視聴後の加筆箇所](https://github.com/SMYT-BT/My-initiative/blob/main/OnlineSchool_Raisetech/Raisetech_task/high-lecture4.md#%E8%AC%9B%E7%BE%A9%E8%A6%96%E8%81%B4%E5%BE%8C%E3%81%AE%E5%8A%A0%E7%AD%86%E7%AE%87%E6%89%80)」にて記載
+※加筆箇所は「[講義視聴後の加筆箇所](https://github.com/SMYT-BT/My-initiative/tree/main/OnlineSchool_Raisetech/Raisetech_task/02_Cloud%20formation%20YAML%E5%BD%A2%E5%BC%8F%E3%82%B3%E3%83%BC%E3%83%89%E4%BD%9C%E6%88%90#%E8%AC%9B%E7%BE%A9%E8%A6%96%E8%81%B4%E5%BE%8C%E3%81%AE%E5%8A%A0%E7%AD%86%E7%AE%87%E6%89%80)」にて記載
 
 ## ChatGPT 出力結果修正箇所
 ### 〇各セキュリティグループ
@@ -98,6 +98,7 @@ AvailabilityZone: !Select
 ```
 ## 講義視聴後の加筆箇所
 ### 〇RDS
+下記内容を上記の ChatGPT からアウトプットされた文書に加える。
 ```
 ・AllowMajorVersionUpgrade: false
 ・AutoMinorVersionUpgrade: true
