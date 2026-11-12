@@ -4,16 +4,22 @@
 - ユーザー登録機能を実装しました
 - バリデーション処理を追加しました
 - エラーメッセージの表示機能を実装しました
+- 
 ## 動作確認
 ### 1. 前回作成した CloudFormation の YAML ファイルをもとに、以下 ChatGPT に依頼する。
 ```
 添付のYAMLファイルをTerraform用のコード文に変換してください。
 ```
 **【出力結果】**
+
 <img width="392" height="146" alt="image" src="https://github.com/user-attachments/assets/270795a6-8c95-4a2f-9020-03e6c78998ec" />
 
+-------------------------
+
 ### 2. 出力結果を全文検閲・理解
-検閲したこと、理解したこと、調べたことを Zennブログにまとめる ⇒ [マイナレッジ](https://zenn.dev/aws_cloudmemo/articles/88cf4f869ecbcc#terraform-%E3%81%AE%E6%BA%96%E5%82%99%E6%89%8B%E9%A0%86%EF%BC%88vc-code-%E7%B7%A8%EF%BC%89)
+検閲したこと、理解したこと、調べたことを Zennブログにまとめる ⇒ [マイブログ](https://zenn.dev/aws_cloudmemo/articles/88cf4f869ecbcc#terraform-%E3%81%AE%E6%BA%96%E5%82%99%E6%89%8B%E9%A0%86%EF%BC%88vc-code-%E7%B7%A8%EF%BC%89)
+
+-------------------------
 
 ### 3. Terraform にてコードの試験開始
 
@@ -21,6 +27,7 @@
 ```
 PS C:\terraform\terraform-project\terraform-aws-CloudWatch-WAF> terraform fmt -recursive
 ```
+
 ② プロバイダー・モジュールの初期化
 ```
 PS C:\terraform\terraform-project\terraform-aws-CloudWatch-WAF> terraform init
@@ -38,12 +45,13 @@ you run "terraform init" in the future.
 
 Terraform has been successfully initialized!
 ```
+
 ③ 構文・設定の検証
 ```
 PS C:\terraform\terraform-project\terraform-aws-CloudWatch-WAF> terraform validate
 Success! The configuration is valid.
 ```
-④ AWSへの作成・変更予定の確認（エラー対応）
+④ AWSへの作成・変更予定の確認（エラー対応あり）
 ```
 PS C:\terraform\terraform-project\terraform-aws-CloudWatch-WAF> terraform plan
 
@@ -62,5 +70,9 @@ Planning failed. Terraform encountered an error while generating this plan.
 │ Error: failed to refresh cached credentials, no EC2 IMDS role found, operation error ec2imds: GetMetadata, request
 │ canceled, context deadline exceeded
 ```
-⇒ Terraformの初期化・フォーマット・構文検証はすべて正常に完了しているが、AWSの認証情報が設定されていない。
+⇒ Terraformの初期化・フォーマット・構文検証は正常に完了しているが、AWSの認証情報が設定されていない。
 
+⇒ 認証情報の登録を実施（[マイブログにて記載](https://zenn.dev/aws_cloudmemo/articles/88cf4f869ecbcc#aws-cli-%E3%82%92%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)）
+
+上記で、AWS CLI をインストールし再度 terraform plan を実行。以下成功！
+<img width="686" height="184" alt="image" src="https://github.com/user-attachments/assets/d15ad2e0-d175-4df1-aa65-cab953675c42" />
