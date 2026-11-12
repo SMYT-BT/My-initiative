@@ -11,6 +11,7 @@ PR（プルリクエスト）を以下のように２回実施。
 ・１回目：PRを作成し、PRを実施。
 <img width="701" height="266" alt="image" src="https://github.com/user-attachments/assets/01d83218-55b9-4768-abfb-69fb2f77588b" />
 
+----------------------------
 
 ・２回目：１回目のPRを使い、再度PRを実施。
 <img width="704" height="275" alt="image" src="https://github.com/user-attachments/assets/b382cc45-6230-45bb-ae66-5d1f0df757d2" />
